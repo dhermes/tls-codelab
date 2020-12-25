@@ -1,0 +1,5 @@
+# Generated content
+build/
+
+# Worktree checkouts
+gh-pages/
