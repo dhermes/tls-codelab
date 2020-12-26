@@ -1,26 +1,28 @@
-# H/T: https://jamielinux.com/docs/openssl-certificate-authority/_downloads/root-config.txt
+# H/T: https://jamielinux.com/docs/openssl-certificate-authority/_downloads/intermediate-config.txt
 
 [ca]
 default_ca = CA_default
 
 [CA_default]
 new_certs_dir     = .
-database          = ./root-ca-database.txt
-serial            = ./root-ca-serial.txt
-private_key       = ./root-ca-key.pem
-certificate       = ./root-ca-cert.pem
+database          = ./intermediate-ca-database.txt
+serial            = ./intermediate-ca-serial.txt
+private_key       = ./intermediate-ca-key.pem
+certificate       = ./intermediate-ca-cert.pem
 default_md        = sha256
 
 name_opt          = ca_default
 cert_opt          = ca_default
 default_days      = 375
 preserve          = no
-policy            = policy_strict
+policy            = policy_loose
+copy_extensions   = copy
 
-[policy_strict]
-countryName             = match
-stateOrProvinceName     = match
-organizationName        = match
+[policy_loose]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
 organizationalUnitName  = optional
 commonName              = supplied
 emailAddress            = optional
@@ -38,16 +40,10 @@ countryName            = US
 stateOrProvinceName    = California
 organizationName       = Initech
 organizationalUnitName = Initech Certificate Authority
-commonName             = Initech Root CA
+commonName             = Initech Intermediate CA
 
 [v3_ca]
 subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always,issuer
 basicConstraints        = critical,CA:true
-keyUsage                = critical,keyCertSign
-
-[v3_intermediate_ca]
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always,issuer
-basicConstraints        = critical,CA:true,pathlen:0
 keyUsage                = critical,keyCertSign

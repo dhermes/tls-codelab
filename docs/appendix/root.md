@@ -35,7 +35,7 @@ openssl req \
 chmod 444 "${TLS_CERTS}/root-ca-cert.pem"
 ```
 
-Here we make the root CA certificate read-only to **all** users on the machine,
+Here we make the root CA certificate readonly to **all** users on the machine,
 e.g. so other users could add this CA to a trust store.
 
 ## Example
