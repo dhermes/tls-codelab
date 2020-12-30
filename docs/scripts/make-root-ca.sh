@@ -7,20 +7,24 @@ if [ -z "${TLS_CERTS_PATH}" ]; then
   exit 1
 fi
 
-PRIVATE_KEY="${TLS_CERTS_PATH}/root-ca-key.pem"
-PUBLIC_CERTIFICATE="${TLS_CERTS_PATH}/root-ca-cert.pem"
-CONFIG_FILE="${TLS_CERTS_PATH}/root-ca.cnf"
-OPENSSL_X509_TXT="${TLS_CERTS_PATH}/root-ca-cert.txt"
+# Just change directories into the `tls-certs` path; this is because the
+# paths (e.g. for the `private_key`) in the `.cnf` files are relative to `./`
+# and making them absolute is not worth the trouble of worrying about a
+# specific absolute path always being available.
+cd "${TLS_CERTS_PATH}"
 
 # 1. Make the key
-rm -f "${PRIVATE_KEY}"
+PRIVATE_KEY="./root-ca-key.pem"
+rm -f "${PRIVATE_KEY}"  # In cases where we are regenerating
 openssl genrsa \
   -out "${PRIVATE_KEY}" \
   4096
 chmod 400 "${PRIVATE_KEY}"
 
 # 2. Make the CA cert (self-signed)
-rm -f "${PUBLIC_CERTIFICATE}"
+PUBLIC_CERTIFICATE="./root-ca-cert.pem"
+CONFIG_FILE="./root-ca.cnf"
+rm -f "${PUBLIC_CERTIFICATE}"  # In cases where we are regenerating
 openssl req \
   -config "${CONFIG_FILE}" \
   -key "${PRIVATE_KEY}" \
@@ -33,4 +37,5 @@ openssl req \
 chmod 444 "${PUBLIC_CERTIFICATE}"
 
 # 3. Generate the x509 text description
+OPENSSL_X509_TXT="./root-ca-cert.txt"
 openssl x509 -noout -text -in "${PUBLIC_CERTIFICATE}" > "${OPENSSL_X509_TXT}"

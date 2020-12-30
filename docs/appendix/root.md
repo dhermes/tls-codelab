@@ -2,15 +2,27 @@
 
 To create a "local" root certificate authority for testing purposes
 
+## Prerequisites
+
+To make sure we are in the right directory for generating certificates:
+
+```{literalinclude} ../scripts/make-root-ca.sh
+---
+language: shell
+lines: 5-14
+---
+```
+
+This is actually critical because some paths in the `openssl` configuration
+files (`.cnf`) are relative paths starting with `./`.
+
 ## Generate a Private Key
 
-```
-TLS_CERTS=".../path/to/tls-certs"
-rm -f "${TLS_CERTS}/root-ca-key.pem"  # In cases where we are regenerating
-openssl genrsa \
-  -out "${TLS_CERTS}/root-ca-key.pem" \
-  4096
-chmod 400 "${TLS_CERTS}/root-ca-key.pem"
+```{literalinclude} ../scripts/make-root-ca.sh
+---
+language: shell
+lines: 17-22
+---
 ```
 
 Notice we make sure to remove any lingering private key (if a previously
@@ -21,18 +33,11 @@ only for the current user (permissions `0400`).
 
 Using an `openssl` configuration file (`.cnf`) that
 
-```
-rm -f "${TLS_CERTS}/root-ca-cert.pem"  # In cases where we are regenerating
-openssl req \
-  -config "${TLS_CERTS}/root-ca.cnf" \
-  -key "${TLS_CERTS}/root-ca-key.pem" \
-  -new \
-  -x509 \
-  -days 7300 \
-  -sha256 \
-  -extensions v3_ca \
-  -out "${TLS_CERTS}/root-ca-cert.pem"
-chmod 444 "${TLS_CERTS}/root-ca-cert.pem"
+```{literalinclude} ../scripts/make-root-ca.sh
+---
+language: shell
+lines: 25-37
+---
 ```
 
 Here we make the root CA certificate readonly to **all** users on the machine,
