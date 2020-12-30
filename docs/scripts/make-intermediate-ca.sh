@@ -13,20 +13,8 @@ fi
 # specific absolute path always being available.
 cd "${TLS_CERTS_PATH}"
 
-PRIVATE_KEY="./intermediate-ca-key.pem"
-CSR="./intermediate-ca-csr.pem"
-CONFIG_FILE="./intermediate-ca.cnf"
-PUBLIC_CERTIFICATE="./intermediate-ca-cert.pem"
-CERTIFICATE_CHAIN="./intermediate-ca-chain.pem"
-OPENSSL_X509_TXT="./intermediate-ca-cert.txt"
-# Root CA paths (this assumes the root CA also uses `TLS_CERTS_PATH`)
-ROOT_CA_SERIAL_ID=1000
-ROOT_CA_DATABASE="./root-ca-database.txt"
-ROOT_CA_SERIAL_TXT="./root-ca-serial.txt"
-ROOT_CA_CONFIG_FILE="./root-ca.cnf"
-ROOT_CA_PUBLIC_CERTIFICATE="./root-ca-cert.pem"
-
 # 1. Make the key
+PRIVATE_KEY="./intermediate-ca-key.pem"
 rm -f "${PRIVATE_KEY}"  # In cases where we are regenerating
 openssl genrsa \
   -out "${PRIVATE_KEY}" \
@@ -34,6 +22,8 @@ openssl genrsa \
 chmod 400 "${PRIVATE_KEY}"
 
 # 2. Make the CSR
+CSR="./intermediate-ca-csr.pem"
+CONFIG_FILE="./intermediate-ca.cnf"
 rm -f "${CSR}"  # Clean up from previous runs
 openssl req \
   -config "${CONFIG_FILE}" \
@@ -43,10 +33,15 @@ openssl req \
   -out "${CSR}"
 
 # 3. Create "temporary" files used by the CA for tracking certs
+ROOT_CA_SERIAL_ID=1000
+ROOT_CA_DATABASE="./root-ca-database.txt"
+ROOT_CA_SERIAL_TXT="./root-ca-serial.txt"
 touch "${ROOT_CA_DATABASE}"
 echo "${ROOT_CA_SERIAL_ID}" > "${ROOT_CA_SERIAL_TXT}"
 
 # 4. "Submit" the CSR to the CA
+PUBLIC_CERTIFICATE="./intermediate-ca-cert.pem"
+ROOT_CA_CONFIG_FILE="./root-ca.cnf"
 rm -f "${PUBLIC_CERTIFICATE}"  # In cases where we are regenerating
 openssl ca \
   -batch \
@@ -66,10 +61,13 @@ rm -f "${ROOT_CA_DATABASE}"*
 rm -f "${ROOT_CA_SERIAL_TXT}"*
 
 # 6. Create auxiliary "chain" file to be used in CA bundles.
+CERTIFICATE_CHAIN="./intermediate-ca-chain.pem"
+ROOT_CA_PUBLIC_CERTIFICATE="./root-ca-cert.pem"
 rm -f "${CERTIFICATE_CHAIN}"  # In cases where we are regenerating
 cat "${PUBLIC_CERTIFICATE}" >> "${CERTIFICATE_CHAIN}"
 cat "${ROOT_CA_PUBLIC_CERTIFICATE}" >> "${CERTIFICATE_CHAIN}"
 chmod 444 "${CERTIFICATE_CHAIN}"
 
 # 7. Generate the x509 text description
+OPENSSL_X509_TXT="./intermediate-ca-cert.txt"
 openssl x509 -noout -text -in "${PUBLIC_CERTIFICATE}" > "${OPENSSL_X509_TXT}"
