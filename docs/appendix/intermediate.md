@@ -60,7 +60,7 @@ lines: 43-55
 ---
 ```
 
-## Create Full Chain with Root CA and Intermediate CA
+## Create Full Chain with Intermediate CA and Root CA
 
 ```{literalinclude} ../scripts/make-intermediate-ca.sh
 ---

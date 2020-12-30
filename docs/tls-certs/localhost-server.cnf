@@ -1,0 +1,19 @@
+[req]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+prompt              = no
+req_extensions      = v3_req
+
+[req_distinguished_name]
+countryName            = US
+stateOrProvinceName    = California
+organizationName       = Initech
+organizationalUnitName = Initech Certificate Authority
+commonName             = Initech Dev Server
+
+[v3_req]
+subjectAltName  = @alt_names
+
+[alt_names]
+DNS.1  = localhost
+IP.1   = 127.0.0.1
