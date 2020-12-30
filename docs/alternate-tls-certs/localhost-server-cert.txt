@@ -1,0 +1,77 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 4096 (0x1000)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Intermediate CA
+        Validity
+            Not Before: Dec 30 19:49:23 2020 GMT
+            Not After : Jan  9 19:49:23 2022 GMT
+        Subject: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Dev Server
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:e2:66:bc:04:33:76:b0:5d:15:84:e7:75:61:1f:
+                    d2:72:b1:3c:8d:df:6e:ae:d9:5b:72:95:e5:1b:5d:
+                    1f:80:3d:95:05:fe:e6:f1:06:9f:9e:5d:d8:14:2a:
+                    65:36:36:4a:58:cc:46:14:26:41:e1:23:43:0d:e1:
+                    93:ad:a2:7b:6e:36:82:c0:ac:a9:a9:4a:71:82:fa:
+                    56:0f:7c:c9:e2:27:d5:57:7c:8f:e2:6d:6c:8c:17:
+                    d5:51:6a:4a:e4:b8:9b:65:06:8a:99:df:00:4e:6e:
+                    af:9e:79:54:20:b5:41:d4:d4:14:ec:d3:6d:6b:aa:
+                    c2:74:90:ff:70:e4:1c:20:6c:0e:f7:a8:73:fa:39:
+                    a3:ba:80:0a:58:6f:55:b7:9a:93:93:69:18:64:bc:
+                    22:f3:f4:c0:5e:42:ba:65:f0:56:3d:cb:1e:f3:e8:
+                    5d:78:cd:3f:fc:ec:f1:a2:37:25:a0:4d:fa:99:48:
+                    73:fe:f6:56:bd:39:fb:90:75:9b:7c:65:10:13:5a:
+                    56:58:a0:c8:1b:61:d0:79:25:33:67:19:26:ce:78:
+                    c2:c6:43:f5:d9:ae:17:43:54:7e:82:e4:1b:bd:a6:
+                    65:9d:0a:98:5a:00:43:8c:42:73:a3:f4:44:ef:87:
+                    5c:b1:c7:55:07:fc:4f:08:8a:34:cf:61:f0:70:80:
+                    14:b9
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                D9:DE:4B:CD:20:79:98:B9:28:D6:26:8C:F8:A3:18:30:C6:B3:F6:7E
+            X509v3 Authority Key Identifier: 
+                keyid:4F:85:B1:90:F9:2F:F8:EB:C1:AA:9F:3A:13:E0:F2:45:78:24:C3:0F
+
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Subject Alternative Name: 
+                DNS:localhost, IP Address:127.0.0.1
+    Signature Algorithm: sha256WithRSAEncryption
+         14:aa:55:ac:28:26:6d:b8:13:61:f2:0f:8e:b9:00:aa:19:a7:
+         4b:0b:c0:dd:db:c8:e4:dd:e3:b4:1c:87:73:52:35:f6:bd:2d:
+         2e:2f:02:b4:84:ba:cb:2d:76:49:8e:6e:1e:2e:58:ec:22:b7:
+         6a:29:d5:13:d7:8e:e9:80:40:1b:df:dd:6f:37:73:c6:82:a8:
+         f9:40:92:2d:be:bf:de:7f:20:b8:6c:5b:48:98:3f:1e:cb:c4:
+         03:35:6b:f8:c8:8c:dc:af:95:76:2a:94:43:6a:d5:f2:4d:fc:
+         db:54:5d:30:10:19:a2:9d:2d:3b:8b:c4:d4:a3:01:13:d2:84:
+         14:c3:ce:05:60:71:c9:32:50:9b:d9:d5:33:56:2b:76:50:d7:
+         65:4f:ca:a1:37:ee:c0:bb:58:8a:b9:0a:d4:fb:d6:45:0b:46:
+         f9:37:04:1f:24:05:5d:24:f0:b5:7f:92:75:d9:0e:75:a3:fb:
+         26:85:f7:8f:7f:fe:17:d6:75:e6:0a:87:42:db:a9:4b:19:3d:
+         f0:df:fb:d9:32:d1:50:65:8b:af:30:34:b8:10:05:40:63:b8:
+         8e:01:d1:5d:fc:06:ea:20:4b:99:cc:26:40:44:27:7c:e0:fd:
+         bf:0f:6f:aa:5d:b1:4f:5e:68:51:1a:60:1d:81:ce:93:5d:70:
+         68:2b:73:bb:57:71:56:e3:be:25:e8:cb:20:35:96:de:0c:31:
+         51:84:b6:0f:b7:a0:bd:5d:2c:65:81:3a:41:e2:bc:94:d7:ba:
+         c6:90:eb:ea:d5:6e:e4:47:7d:24:5b:25:7d:de:02:c7:6f:a7:
+         45:02:15:f7:af:73:2c:79:c8:fe:7d:16:60:4e:11:79:e1:6a:
+         f2:51:cb:72:08:e8:67:8e:82:4a:f2:e9:36:91:ad:59:da:71:
+         44:77:bd:6f:85:a0:30:e1:f7:18:7b:3f:d9:74:c9:f9:23:89:
+         13:27:21:a2:0c:d0:9f:17:d4:8c:8a:bd:ac:ff:90:2b:cb:f4:
+         68:98:30:c4:d9:5a:55:c5:4e:d7:26:e8:32:f4:ff:6a:3f:10:
+         b6:3a:63:25:60:50:60:c6:5c:48:3f:eb:0c:c9:c2:5a:2a:30:
+         7c:4f:8a:50:2a:08:bd:4c:f7:42:cc:ae:92:0f:01:9e:2e:f0:
+         8d:33:27:1d:38:06:37:80:ff:ea:29:9d:07:22:c0:98:88:d6:
+         50:41:5f:66:b8:21:70:c5:d4:a8:41:8e:24:6a:21:48:cc:d2:
+         1f:b4:f3:0d:c6:ed:34:b3:2c:b8:a0:b6:95:7e:49:35:1d:6a:
+         a7:be:a4:67:d2:d5:2d:7a:08:ad:4e:51:c3:79:5e:b6:83:da:
+         6a:d7:27:d6:43:d5:bb:ed
