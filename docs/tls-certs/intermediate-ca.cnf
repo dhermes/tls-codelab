@@ -54,3 +54,10 @@ subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid,issuer
 keyUsage                = critical,digitalSignature,keyEncipherment
 extendedKeyUsage        = serverAuth
+
+[client_cert]
+basicConstraints        = CA:FALSE
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+keyUsage                = critical,nonRepudiation,digitalSignature,keyEncipherment
+extendedKeyUsage        = clientAuth

@@ -29,7 +29,7 @@ Notice we make sure to remove any lingering private key (if a previously
 generated one exists) and we make sure the generated file is readonly and
 only for the current user (permissions `0400`).
 
-## Generate a CSR for the Root CA
+## Generate a CSR for the Intermediate CA
 
 A Certificate Signing Request (CSR) is typically used with public certificate
 authorities (e.g. think DigiCert) so that a customer can request a **signed**
