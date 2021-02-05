@@ -12,5 +12,6 @@
 introduction
 openssl
 wireshark
+trust
 appendix/index
 ```
