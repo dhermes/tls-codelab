@@ -1,45 +1,40 @@
+const axios = require('axios')
 const commandLineArgs = require('command-line-args')
 const fs = require('fs')
-const requestPromise = require('request-promise-native')
-const requestErrors = require('request-promise-native/errors')
+const https = require('https')
 
-const PORT = 8443
-const URL = `https://localhost:${PORT}`
 const OPTION_DEFINITIONS = [
-    { name: 'cert' },
-    { name: 'key' },
     { name: 'root-ca' },
+    { name: 'url' },
 ]
 
 function getOptions() {
     const cliOptions = commandLineArgs(OPTION_DEFINITIONS)
     const rootCA = cliOptions['root-ca']
-    return { cert: cliOptions.cert, key: cliOptions.key, rootCA }
+    const url = cliOptions.url || 'https://localhost:8443'
+    return { rootCA, url }
 }
 
 async function main() {
     const cliOptions = getOptions()
     const options = {}
-    if (cliOptions.cert) {
-        options.cert = fs.readFileSync(cliOptions.cert)
-    }
-    if (cliOptions.key) {
-        options.key = fs.readFileSync(cliOptions.key)
-    }
     if (cliOptions.rootCA) {
         options.ca = [fs.readFileSync(cliOptions.rootCA)]
     }
+    const axiosOptions = {
+        httpsAgent: new https.Agent(options),
+    }
 
     try {
-        const response = await requestPromise.get(URL, options)
-        console.log(response.trimEnd())
+        const response = await axios.get(cliOptions.url, axiosOptions)
+        console.log(response.data)
     } catch (err) {
-        if (!(err instanceof requestErrors.RequestError)) {
+        if (!(err.isAxiosError)) {
             throw err
         }
 
-        console.log(`Error Code: ${err.error.code}`)
-        console.log(`Error Message: ${err.error.message}`)
+        console.log(err.code)
+        console.log(err.message)
     }
 }
 
