@@ -1,10 +1,15 @@
 # Tooling
 
+```{contents}
+:depth: 1
+:local:
+```
+
 ## Checking Certificate Presented by Server
 
 By invoking
 
-```
+```text
 $ openssl s_client -showcerts -connect github.com:443 -servername github.com
 ```
 
@@ -124,7 +129,7 @@ closed
 
 ## Chain
 
-```
+```text
 depth=2 C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert High Assurance EV Root CA
 verify return:1
 depth=1 C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert SHA2 High Assurance Server CA
@@ -149,7 +154,7 @@ of each certificate in the chain. The chain is composed of
 
 We see later down the output of `openssl s_client` lines like
 
-```
+```text
  0 s:/C=US/ST=California/L=San Francisco/O=GitHub, Inc./CN=github.com
    i:/C=US/O=DigiCert Inc/OU=www.digicert.com/CN=DigiCert SHA2 High Assurance Server CA
 ```
@@ -384,7 +389,7 @@ that each link in the chain is legitimate. How can we verify each link?
 
 First, ensure the intermediate was issued by the root
 
-```
+```text
 $ openssl verify \
 >   -verbose \
 >   -CAfile ./docs/tls-certs/DigiCert-High-Assurance-EV-Root-CA.pem \
@@ -395,7 +400,7 @@ $ openssl verify \
 We can also just omit the `-CAfile` flag because the intermediate has been
 signed by a system root:
 
-```
+```text
 $ openssl verify \
 >   -verbose \
 >   ./docs/tls-certs/DigiCert-SHA2-High-Assurance-Server-CA.pem
@@ -404,7 +409,7 @@ $ openssl verify \
 
 Using the same `openssl verify` command, can we verify the leaf?
 
-```
+```text
 $ openssl verify \
 >   -verbose \
 >   ./docs/tls-certs/github-dot-com.pem
@@ -427,7 +432,7 @@ subtle. Since we've specified `-CAfile` as an override for the system
 root store, the root is no longer part of this verify command. From the
 [docs][1]:
 
-```
+```text
    -CAfile: A file of trusted certificates. The file should contain multiple
             certificates in PEM format concatenated together.
 
