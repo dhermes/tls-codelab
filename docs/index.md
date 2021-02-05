@@ -9,5 +9,7 @@
 ```{toctree}
 :maxdepth: 1
 
+introduction
+tooling
 appendix/index
 ```
