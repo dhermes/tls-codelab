@@ -1,6 +1,6 @@
-# Generating Leaf Certificate for TLS Client (in mTLS)
+# Generating Leaf Certificate for TLS Client
 
-To create a "local" client certificate for testing purposes
+To create a "local" client certificate for use in testing mTLS
 
 ## Prerequisites
 
