@@ -4,6 +4,7 @@
 # Generated content
 build/
 docs/nodejs/node_modules/
+keylogfile.txt
 
 # Worktree checkouts
 gh-pages/
