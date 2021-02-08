@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Mutual TLS &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Appendix" href="appendix/index.html" />
+    <link rel="prev" title="Node.js" href="nodejs.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                a397c8ae
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodejs.html">Node.js</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mutual TLS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node-js-server">Node.js Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#without-extra-root-ca">Without Extra Root CA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#with-extra-root-ca">With Extra Root CA</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#node-js-client">Node.js Client</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Mutual TLS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/a397c8ae732ab8e490998ef96269ce57362ad0a0/docs/mutual-tls.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mutual-tls">
+<h1>Mutual TLS<a class="headerlink" href="#mutual-tls" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#node-js-server" id="id1">Node.js Server</a></p>
+<ul>
+<li><p><a class="reference internal" href="#without-extra-root-ca" id="id2">Without Extra Root CA</a></p></li>
+<li><p><a class="reference internal" href="#with-extra-root-ca" id="id3">With Extra Root CA</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#node-js-client" id="id4">Node.js Client</a></p></li>
+</ul>
+</div>
+<p>When performing mutual TLS (or mTLS for short), trust must be established in
+both directions. We’ve already discussed how a client trusts a server, here
+we’ll also cover how a server can trust a client.</p>
+<p>As in other sections, the certificates in <a class="reference internal" href="appendix/index.html"><span class="doc">Appendix</span></a> will be used
+here. The server will continue to use the set of certificates signed by
+<code class="docutils literal notranslate"><span class="pre">docs/tls-certs/root-ca-cert.pem</span></code> while the client will use the set of
+certificates signed by <code class="docutils literal notranslate"><span class="pre">docs/alternate-tls-certs/root-ca-cert.pem</span></code>. This avoids
+any issues where a client is trusted <strong>by accident</strong> by sharing a CA with the
+server.</p>
+<div class="section" id="node-js-server">
+<h2><a class="toc-backref" href="#id1">Node.js Server</a><a class="headerlink" href="#node-js-server" title="Permalink to this headline">¶</a></h2>
+<p>The example mTLS server is very similar to the original TLS server. The primary
+differences are usage of the <code class="docutils literal notranslate"><span class="pre">requestCert</span></code> and <code class="docutils literal notranslate"><span class="pre">rejectUnauthorized</span></code> TLS
+options and adding the ability to add an extra CA to use when trusting the
+client certificate:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">key</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span><span class="p">),</span>
+    <span class="nx">cert</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">),</span>
+    <span class="nx">requestCert</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">ca</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>as well as a listener added for <code class="docutils literal notranslate"><span class="pre">secureConnection</span></code> events that can be used to
+provide an error reason in cases where mTLS is not successful:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">server</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;secureConnection&#39;</span><span class="p">,</span> <span class="nx">secureConnectionCallback</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="without-extra-root-ca">
+<h3><a class="toc-backref" href="#id2">Without Extra Root CA</a><a class="headerlink" href="#without-extra-root-ca" title="Permalink to this headline">¶</a></h3>
+<p>By running the server without an extra CA, it’s in a similar state as
+the TLS server:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
+node server-mtls.js \
+  --cert ../tls-certs/localhost-server-cert.pem \
+  --key ../tls-certs/localhost-server-key.pem
+# Example mTLS app listening at https://localhost:9443
+</pre></div>
+</div>
+<p>Making a request with <code class="docutils literal notranslate"><span class="pre">curl</span></code> that <strong>doesn’t specify</strong> any client certificate
+information still results in a validation error:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/root-ca-cert.pem https://localhost:9443
+{&quot;mTLSValid&quot;: false, &quot;reason&quot;: &quot;UNABLE_TO_GET_ISSUER_CERT&quot;}
+</pre></div>
+</div>
+<p>This is because <code class="docutils literal notranslate"><span class="pre">curl</span></code> has seen a “Certificate Request” TSLv1.2 record
+layer from the Node.js server (due to <code class="docutils literal notranslate"><span class="pre">requestCert:</span> <span class="pre">true</span></code>) and in turn
+<code class="docutils literal notranslate"><span class="pre">curl</span></code> presented a “Certificate” record layer containing a list of 0
+certificates:</p>
+<img alt="Wireshark Curl Certificates Length Zero" class="align-center" src="_images/wireshark07.png" />
+<p>If we decide to actually present a client certificate, the server fails to
+validate with a similar error, because the client’s CA is not known to the
+server:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl \
+&gt;   --cacert ../tls-certs/root-ca-cert.pem \
+&gt;   --key ../alternate-tls-certs/localhost-client-key.pem \
+&gt;   --cert ../alternate-tls-certs/localhost-client-chain.pem \
+&gt;   https://localhost:9443
+{&quot;mTLSValid&quot;: false, &quot;reason&quot;: &quot;UNABLE_TO_GET_ISSUER_CERT_LOCALLY&quot;}
+</pre></div>
+</div>
+</div>
+<div class="section" id="with-extra-root-ca">
+<h3><a class="toc-backref" href="#id3">With Extra Root CA</a><a class="headerlink" href="#with-extra-root-ca" title="Permalink to this headline">¶</a></h3>
+<p>By running the server <strong>with</strong> the client’s CA added:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
+node server-mtls.js \
+  --cert ../tls-certs/localhost-server-cert.pem \
+  --key ../tls-certs/localhost-server-key.pem \
+  --root-ca ../alternate-tls-certs/root-ca-cert.pem
+# Example mTLS app listening at https://localhost:9443
+</pre></div>
+</div>
+<p>after which the <code class="docutils literal notranslate"><span class="pre">curl</span></code> request passes validation</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl \
+&gt;   --cacert ../tls-certs/root-ca-cert.pem \
+&gt;   --key ../alternate-tls-certs/localhost-client-key.pem \
+&gt;   --cert ../alternate-tls-certs/localhost-client-chain.pem \
+&gt;   https://localhost:9443
+{&quot;mTLSValid&quot;: true}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="node-js-client">
+<h2><a class="toc-backref" href="#id4">Node.js Client</a><a class="headerlink" href="#node-js-client" title="Permalink to this headline">¶</a></h2>
+<p>There isn’t much difference in making a request with <code class="docutils literal notranslate"><span class="pre">axios</span></code> that uses mTLS
+instead of one-way TLS. The primary difference here is the use of the
+client private key and public certificate:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="nx">options</span><span class="p">.</span><span class="nx">cert</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">)</span>
+<span class="nx">options</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">ca</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)]</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">axiosOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">httpsAgent</span><span class="o">:</span> <span class="k">new</span> <span class="nx">https</span><span class="p">.</span><span class="nx">Agent</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The requests below will hit <code class="docutils literal notranslate"><span class="pre">server-mtls.js</span></code> configured with
+<code class="docutils literal notranslate"><span class="pre">--root-ca</span> <span class="pre">../alternate-tls-certs/root-ca-cert.pem</span></code>.</p>
+<p>Using the one-way <code class="docutils literal notranslate"><span class="pre">request.js</span></code>, the server validation error is the same as
+the one encountered by <code class="docutils literal notranslate"><span class="pre">curl</span></code> without a client certificate:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request.js \
+&gt;   --root-ca ../tls-certs/root-ca-cert.pem \
+&gt;   --url https://localhost:9443
+Response: {&quot;mTLSValid&quot;:false,&quot;reason&quot;:&quot;UNABLE_TO_GET_ISSUER_CERT&quot;}
+</pre></div>
+</div>
+<p>By providing a <code class="docutils literal notranslate"><span class="pre">--key</span></code> and <code class="docutils literal notranslate"><span class="pre">--cert</span></code> in <code class="docutils literal notranslate"><span class="pre">request-mtls.js</span></code>, the request is valid:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request-mtls.js \
+&gt;   --key ../alternate-tls-certs/localhost-client-key.pem \
+&gt;   --cert ../alternate-tls-certs/localhost-client-chain.pem \
+&gt;   --root-ca ../tls-certs/root-ca-cert.pem
+{ mTLSValid: true }
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="appendix/index.html" class="btn btn-neutral float-right" title="Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="nodejs.html" class="btn btn-neutral float-left" title="Node.js" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes a397c8ae.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

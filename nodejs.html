@@ -40,7 +40,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Appendix" href="appendix/index.html" />
+    <link rel="next" title="Mutual TLS" href="mutual-tls.html" />
     <link rel="prev" title="Common Reasons to Debug TLS" href="problems.html" /> 
 </head>
 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                42d08fe5
+                a397c8ae
               </div>
             
           
@@ -114,9 +114,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#presenting-the-root-with-the-server-chain">Presenting the Root with the Server Chain</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#client">Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client">Client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#making-requests">Making Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">No Extra CA Provided</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#root-ca-provided">Root CA Provided</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mutual-tls.html">Mutual TLS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
 </ul>
 
@@ -173,7 +179,7 @@
         
           
             
-              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/nodejs.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/dhermes/tls-codelab/blob/a397c8ae732ab8e490998ef96269ce57362ad0a0/docs/nodejs.md" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -191,19 +197,25 @@
 <h1>Node.js<a class="headerlink" href="#node-js" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#development-certificates" id="id3">Development Certificates</a></p></li>
-<li><p><a class="reference internal" href="#server" id="id4">Server</a></p>
+<li><p><a class="reference internal" href="#development-certificates" id="id4">Development Certificates</a></p></li>
+<li><p><a class="reference internal" href="#server" id="id5">Server</a></p>
 <ul>
-<li><p><a class="reference internal" href="#misconfiguration" id="id5">Misconfiguration</a></p></li>
-<li><p><a class="reference internal" href="#valid-configuration" id="id6">Valid Configuration</a></p></li>
-<li><p><a class="reference internal" href="#presenting-the-root-with-the-server-chain" id="id7">Presenting the Root with the Server Chain</a></p></li>
+<li><p><a class="reference internal" href="#misconfiguration" id="id6">Misconfiguration</a></p></li>
+<li><p><a class="reference internal" href="#valid-configuration" id="id7">Valid Configuration</a></p></li>
+<li><p><a class="reference internal" href="#presenting-the-root-with-the-server-chain" id="id8">Presenting the Root with the Server Chain</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#client" id="id8">Client</a></p></li>
+<li><p><a class="reference internal" href="#client" id="id9">Client</a></p>
+<ul>
+<li><p><a class="reference internal" href="#making-requests" id="id10">Making Requests</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id11">No Extra CA Provided</a></p></li>
+<li><p><a class="reference internal" href="#root-ca-provided" id="id12">Root CA Provided</a></p></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section" id="development-certificates">
-<h2><a class="toc-backref" href="#id3">Development Certificates</a><a class="headerlink" href="#development-certificates" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Development Certificates</a><a class="headerlink" href="#development-certificates" title="Permalink to this headline">¶</a></h2>
 <p>In <a class="reference internal" href="appendix/index.html"><span class="doc">Appendix</span></a>, we lay out the process for generating a chain that is
 valid for <code class="docutils literal notranslate"><span class="pre">localhost</span></code> that can be used for testing. Since it costs money to get
 a real CA to create a certificate <strong>and</strong> since a real CA would never sign a
@@ -213,7 +225,7 @@ this is custom, we must add it to our root trust store when making requests
 this should be avoided <strong>at all costs</strong>).</p>
 </div>
 <div class="section" id="server">
-<h2><a class="toc-backref" href="#id4">Server</a><a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Server</a><a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
 <p>We’ll use this to run a TLS server (<a class="reference internal" href="appendix/server-js.html"><span class="doc">server.js</span></a>) and connect to
 it via <code class="docutils literal notranslate"><span class="pre">curl</span></code>. In particular, we are going to specify the private key and
 public certificate pair for the server’s leaf certificate:</p>
@@ -225,7 +237,7 @@ public certificate pair for the server’s leaf certificate:</p>
 </pre></div>
 </div>
 <div class="section" id="misconfiguration">
-<span id="server-misconfiguration"></span><h3><a class="toc-backref" href="#id5">Misconfiguration</a><a class="headerlink" href="#misconfiguration" title="Permalink to this headline">¶</a></h3>
+<span id="server-misconfiguration"></span><h3><a class="toc-backref" href="#id6">Misconfiguration</a><a class="headerlink" href="#misconfiguration" title="Permalink to this headline">¶</a></h3>
 <p>We’ll first run the server with an invalid configuration:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
 node server.js \
@@ -301,7 +313,7 @@ together.</p>
 </div>
 </div>
 <div class="section" id="valid-configuration">
-<h3><a class="toc-backref" href="#id6">Valid Configuration</a><a class="headerlink" href="#valid-configuration" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">Valid Configuration</a><a class="headerlink" href="#valid-configuration" title="Permalink to this headline">¶</a></h3>
 <p>In <a class="reference internal" href="#server-misconfiguration"><span class="std std-ref">Misconfiguration</span></a> above, we intentionally ran the server
 with an “invalid” certificate. Instead, we should’ve used a file that
 contained enough of our chain for clients to do all validation they’d need
@@ -338,7 +350,7 @@ how to fix it, please visit the web page mentioned above.
 </div>
 </div>
 <div class="section" id="presenting-the-root-with-the-server-chain">
-<h3><a class="toc-backref" href="#id7">Presenting the Root with the Server Chain</a><a class="headerlink" href="#presenting-the-root-with-the-server-chain" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">Presenting the Root with the Server Chain</a><a class="headerlink" href="#presenting-the-root-with-the-server-chain" title="Permalink to this headline">¶</a></h3>
 <p>If it was good to present the intermediate, is it good to present the root too?
 The <code class="docutils literal notranslate"><span class="pre">localhost-server-full.pem</span></code> file contains bundles the leaf, intermediate
 and root certificates together.</p>
@@ -378,7 +390,7 @@ certificate signed by a different CA.</p>
 </div>
 </div>
 <div class="section" id="client">
-<span id="nodejs-client"></span><h2><a class="toc-backref" href="#id8">Client</a><a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h2>
+<span id="nodejs-client"></span><h2><a class="toc-backref" href="#id9">Client</a><a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h2>
 <p>As we saw above, there is an apparent disagreement between the <code class="docutils literal notranslate"><span class="pre">--cert</span></code> flag
 (and the Node.js <code class="docutils literal notranslate"><span class="pre">cert</span></code> TLS option) and the <code class="docutils literal notranslate"><span class="pre">*-chain.pem</span></code> suffix. This is not
 an accident. There is a significant amount of confusion using the
@@ -413,6 +425,67 @@ our custom root CA doesn’t stop us from trusting <code class="docutils literal
 well-known CAs curated by Mozilla. Mozilla’s CAs are completely replaced when
 CAs are explicitly specified using this option.</p>
 </div>
+<div class="section" id="making-requests">
+<h3><a class="toc-backref" href="#id10">Making Requests</a><a class="headerlink" href="#making-requests" title="Permalink to this headline">¶</a></h3>
+<p>In order to make an HTTP-over-TLS (typically HTTPS) request via Node.js,
+the <code class="docutils literal notranslate"><span class="pre">axios</span></code> <a class="reference external" href="https://github.com/axios/axios">library</a> is used. To configure a custom CA, it’s necessary to
+override the <code class="docutils literal notranslate"><span class="pre">httpsAgent</span></code>:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">ca</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)]</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">axiosOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">httpsAgent</span><span class="o">:</span> <span class="k">new</span> <span class="nx">https</span><span class="p">.</span><span class="nx">Agent</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>in the request options:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="nx">axiosOptions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id11">No Extra CA Provided</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Invoking <code class="docutils literal notranslate"><span class="pre">axios</span></code> in the <code class="docutils literal notranslate"><span class="pre">request.js</span></code> script <strong>without</strong> mentioning the
+custom CA results in a familiar error message:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request.js
+   Error Code: UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+Error Message: unable to get local issuer certificate
+</pre></div>
+</div>
+</div>
+<div class="section" id="root-ca-provided">
+<h3><a class="toc-backref" href="#id12">Root CA Provided</a><a class="headerlink" href="#root-ca-provided" title="Permalink to this headline">¶</a></h3>
+<p>To successfully connect to the locally running server, it’s enough to
+specify a path to the custom root CA:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request.js \
+&gt;   --root-ca ../tls-certs/root-ca-cert.pem
+Response: {&quot;success&quot;:true}
+</pre></div>
+</div>
+<div class="error admonition">
+<p class="admonition-title">CA Override</p>
+<p>Herein lies the problem, we have replaced our <strong>entire</strong> root bundle with a
+bundle containing only a single root CA (<code class="docutils literal notranslate"><span class="pre">root-ca-cert.pem</span></code>). Now a request
+to <code class="docutils literal notranslate"><span class="pre">google.com</span></code> that would have worked without an override</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request.js --url https://google.com
+Response: &quot;&lt;!doctype html&gt;...
+</pre></div>
+</div>
+<p>will <strong>fail</strong> in the same way our previous request failed</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ cd docs/nodejs/
+$ node request.js \
+&gt;   --root-ca ../tls-certs/root-ca-cert.pem \
+&gt;   --url https://google.com
+   Error Code: UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+Error Message: unable to get local issuer certificate
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 
@@ -422,7 +495,7 @@ CAs are explicitly specified using this option.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="appendix/index.html" class="btn btn-neutral float-right" title="Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mutual-tls.html" class="btn btn-neutral float-right" title="Mutual TLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="problems.html" class="btn btn-neutral float-left" title="Common Reasons to Debug TLS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
@@ -430,7 +503,7 @@ CAs are explicitly specified using this option.</p>
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+        &#169; Copyright 2020, Danny Hermes a397c8ae.
 
     </p>
   </div>

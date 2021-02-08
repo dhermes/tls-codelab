@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>server.js &mdash; tls-codelab  documentation</title>
+  <title>request-mtls.js &mdash; tls-codelab  documentation</title>
   
 
   
@@ -40,8 +40,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="request.js" href="request-js.html" />
-    <link rel="prev" title="Keeping Around Two (or More) Root CAs" href="multiple.html" /> 
+    <link rel="prev" title="server-mtls.js" href="server-mtls-js.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -104,10 +103,10 @@
 <li class="toctree-l2"><a class="reference internal" href="server.html">Generating Leaf Certificate for Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="client.html">Generating Leaf Certificate for TLS Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multiple.html">Keeping Around Two (or More) Root CAs</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">server.js</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-js.html"><code class="docutils literal notranslate"><span class="pre">server.js</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="request-js.html"><code class="docutils literal notranslate"><span class="pre">request.js</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="server-mtls-js.html"><code class="docutils literal notranslate"><span class="pre">server-mtls.js</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="request-mtls-js.html"><code class="docutils literal notranslate"><span class="pre">request-mtls.js</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">request-mtls.js</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -160,14 +159,14 @@
         
           <li><a href="index.html">Appendix</a> &raquo;</li>
         
-      <li><code class="docutils literal notranslate"><span class="pre">server.js</span></code></li>
+      <li><code class="docutils literal notranslate"><span class="pre">request-mtls.js</span></code></li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
             
-              <a href="https://github.com/dhermes/tls-codelab/blob/a397c8ae732ab8e490998ef96269ce57362ad0a0/docs/appendix/server-js.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/dhermes/tls-codelab/blob/a397c8ae732ab8e490998ef96269ce57362ad0a0/docs/appendix/request-mtls-js.md" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -181,17 +180,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="server-js">
-<h1><code class="docutils literal notranslate"><span class="pre">server.js</span></code><a class="headerlink" href="#server-js" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">commandLineArgs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;command-line-args&#39;</span><span class="p">)</span>
-<span class="kd">const</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express&#39;</span><span class="p">)</span>
+  <div class="section" id="request-mtls-js">
+<h1><code class="docutils literal notranslate"><span class="pre">request-mtls.js</span></code><a class="headerlink" href="#request-mtls-js" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;axios&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">commandLineArgs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;command-line-args&#39;</span><span class="p">)</span>
 <span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
 <span class="kd">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">)</span>
 
-<span class="kd">const</span> <span class="nx">PORT</span> <span class="o">=</span> <span class="mf">8443</span>
+<span class="kd">const</span> <span class="nx">URL</span> <span class="o">=</span> <span class="s1">&#39;https://localhost:9443&#39;</span>
 <span class="kd">const</span> <span class="nx">OPTION_DEFINITIONS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;cert&#39;</span> <span class="p">},</span>
     <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;key&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;root-ca&#39;</span> <span class="p">},</span>
 <span class="p">]</span>
 
 <span class="kd">function</span> <span class="nx">getOptions</span><span class="p">()</span> <span class="p">{</span>
@@ -206,29 +206,24 @@
         <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="sb">`The &#39;--key&#39; flag is required`</span><span class="p">)</span>
         <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
     <span class="p">}</span>
-
-    <span class="k">return</span> <span class="p">{</span> <span class="nx">cert</span><span class="o">:</span> <span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">,</span> <span class="nx">key</span><span class="o">:</span> <span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span> <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">rootCA</span> <span class="o">=</span> <span class="nx">cliOptions</span><span class="p">[</span><span class="s1">&#39;root-ca&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="nx">cert</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">rootCA</span> <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">const</span> <span class="nx">cliOptions</span> <span class="o">=</span> <span class="nx">getOptions</span><span class="p">()</span>
-
-    <span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">()</span>
-    <span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="nx">key</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span><span class="p">),</span>
-        <span class="nx">cert</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">),</span>
+    <span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">cert</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">)</span>
+    <span class="nx">options</span><span class="p">.</span><span class="nx">key</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">.</span><span class="nx">ca</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)]</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">axiosOptions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">httpsAgent</span><span class="o">:</span> <span class="k">new</span> <span class="nx">https</span><span class="p">.</span><span class="nx">Agent</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">_req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="c1">// NOTE: `res.json()` doesn&#39;t add a newline so we do it manually.</span>
-        <span class="nx">res</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
-        <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;{&quot;success&quot;: true}\n&#39;</span><span class="p">)</span>
-    <span class="p">})</span>
-
-    <span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">app</span><span class="p">)</span>
-    <span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">PORT</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Example TLS app listening at https://localhost:</span><span class="si">${</span><span class="nx">PORT</span><span class="si">}</span><span class="sb">`</span><span class="p">)</span>
-    <span class="p">})</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">,</span> <span class="nx">axiosOptions</span><span class="p">)</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="k">if</span> <span class="p">(</span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span> <span class="o">===</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
@@ -244,8 +239,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="request-js.html" class="btn btn-neutral float-right" title="request.js" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="multiple.html" class="btn btn-neutral float-left" title="Keeping Around Two (or More) Root CAs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="server-mtls-js.html" class="btn btn-neutral float-left" title="server-mtls.js" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
