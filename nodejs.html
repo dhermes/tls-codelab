@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Node.js &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Appendix" href="appendix/index.html" />
+    <link rel="prev" title="Common Reasons to Debug TLS" href="problems.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Node.js</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#development-certificates">Development Certificates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#server">Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#misconfiguration">Misconfiguration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#no-extra-ca-provided">No Extra CA Provided</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#only-root-ca-provided">Only Root CA Provided</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#only-intermediate-ca-provided">Only Intermediate CA Provided</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#both-root-and-intermediate-ca-provided">Both Root and Intermediate CA Provided</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#valid-configuration">Valid Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Only Root CA Provided</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">No Extra CA Provided</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#presenting-the-root-with-the-server-chain">Presenting the Root with the Server Chain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#client">Client</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Node.js</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/nodejs.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="node-js">
+<h1>Node.js<a class="headerlink" href="#node-js" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#development-certificates" id="id3">Development Certificates</a></p></li>
+<li><p><a class="reference internal" href="#server" id="id4">Server</a></p>
+<ul>
+<li><p><a class="reference internal" href="#misconfiguration" id="id5">Misconfiguration</a></p></li>
+<li><p><a class="reference internal" href="#valid-configuration" id="id6">Valid Configuration</a></p></li>
+<li><p><a class="reference internal" href="#presenting-the-root-with-the-server-chain" id="id7">Presenting the Root with the Server Chain</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#client" id="id8">Client</a></p></li>
+</ul>
+</div>
+<div class="section" id="development-certificates">
+<h2><a class="toc-backref" href="#id3">Development Certificates</a><a class="headerlink" href="#development-certificates" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference internal" href="appendix/index.html"><span class="doc">Appendix</span></a>, we lay out the process for generating a chain that is
+valid for <code class="docutils literal notranslate"><span class="pre">localhost</span></code> that can be used for testing. Since it costs money to get
+a real CA to create a certificate <strong>and</strong> since a real CA would never sign a
+certificate for <code class="docutils literal notranslate"><span class="pre">localhost</span></code>, we also use a custom self-signed root CA. Since
+this is custom, we must add it to our root trust store when making requests
+(some may recommend installing this onto the system root store permanently,
+this should be avoided <strong>at all costs</strong>).</p>
+</div>
+<div class="section" id="server">
+<h2><a class="toc-backref" href="#id4">Server</a><a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
+<p>We’ll use this to run a TLS server (<a class="reference internal" href="appendix/server-js.html"><span class="doc">server.js</span></a>) and connect to
+it via <code class="docutils literal notranslate"><span class="pre">curl</span></code>. In particular, we are going to specify the private key and
+public certificate pair for the server’s leaf certificate:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">key</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">key</span><span class="p">),</span>
+    <span class="nx">cert</span><span class="o">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">cert</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="misconfiguration">
+<span id="server-misconfiguration"></span><h3><a class="toc-backref" href="#id5">Misconfiguration</a><a class="headerlink" href="#misconfiguration" title="Permalink to this headline">¶</a></h3>
+<p>We’ll first run the server with an invalid configuration:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
+node server.js \
+  --cert ../tls-certs/localhost-server-cert.pem \
+  --key ../tls-certs/localhost-server-key.pem
+# Example TLS app listening at https://localhost:8443
+</pre></div>
+</div>
+<p>The certificate file for this server <strong>does not</strong> contain the intermediate.
+Using <code class="docutils literal notranslate"><span class="pre">curl</span></code> to hit this server will <strong>fail</strong> in most typical ways we may
+invoke it.</p>
+<div class="section" id="no-extra-ca-provided">
+<h4>No Extra CA Provided<a class="headerlink" href="#no-extra-ca-provided" title="Permalink to this headline">¶</a></h4>
+<p>Using a vanilla <code class="docutils literal notranslate"><span class="pre">curl</span></code> request fails, as expected:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl https://localhost:8443
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></div>
+</div>
+<p>As mentioned above, we are using a custom CA so we need to add this to
+<code class="docutils literal notranslate"><span class="pre">curl</span></code>.</p>
+</div>
+<div class="section" id="only-root-ca-provided">
+<h4>Only Root CA Provided<a class="headerlink" href="#only-root-ca-provided" title="Permalink to this headline">¶</a></h4>
+<p>We “expect” it to work if we can trust the local root that we created</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/root-ca-cert.pem https://localhost:8443
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></div>
+</div>
+<p>In particular note that the <code class="docutils literal notranslate"><span class="pre">unable</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">local</span> <span class="pre">issuer</span> <span class="pre">certificate</span></code>
+resembles a similar error we saw in <a class="reference internal" href="openssl.html"><span class="doc">openssl Tooling</span></a> when using
+<code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">verify</span></code>. The issue here is that when validating the server, <code class="docutils literal notranslate"><span class="pre">curl</span></code>
+has no way to follow the leaf certificate to the root because it doesn’t
+know anything about our (private) intermediate certificate.</p>
+</div>
+<div class="section" id="only-intermediate-ca-provided">
+<h4>Only Intermediate CA Provided<a class="headerlink" href="#only-intermediate-ca-provided" title="Permalink to this headline">¶</a></h4>
+<p>Since we’ve concluded that the missing intermediate certificate is the
+problem, a common next step may be to specify (only) the intermediate as
+an extra CA:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/intermediate-ca-cert.pem https://localhost:8443
+curl: (60) SSL certificate problem: unable to get issuer certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></div>
+</div>
+<p>The error message here <code class="docutils literal notranslate"><span class="pre">unable</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">issuer</span> <span class="pre">certificate</span></code> is slightly
+different. It indicates that we <strong>are</strong> able to find the issuer of our
+leaf certificate, but <strong>are not</strong> able to follow the chain one more step
+to find the issuer of the intermediate.</p>
+</div>
+<div class="section" id="both-root-and-intermediate-ca-provided">
+<h4>Both Root and Intermediate CA Provided<a class="headerlink" href="#both-root-and-intermediate-ca-provided" title="Permalink to this headline">¶</a></h4>
+<p>Since it’s clear now that <strong>both</strong> the intermediate and root CA are needed,
+we use the <code class="docutils literal notranslate"><span class="pre">intermediate-ca-chain.pem</span></code> file, which bundles both certificates
+together.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/intermediate-ca-chain.pem https://localhost:8443
+{&quot;success&quot;: true}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="valid-configuration">
+<h3><a class="toc-backref" href="#id6">Valid Configuration</a><a class="headerlink" href="#valid-configuration" title="Permalink to this headline">¶</a></h3>
+<p>In <a class="reference internal" href="#server-misconfiguration"><span class="std std-ref">Misconfiguration</span></a> above, we intentionally ran the server
+with an “invalid” certificate. Instead, we should’ve used a file that
+contained enough of our chain for clients to do all validation they’d need
+to. The <code class="docutils literal notranslate"><span class="pre">localhost-server-chain.pem</span></code> file contains both the leaf and the
+intermediate certificates.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
+node server.js \
+  --cert ../tls-certs/localhost-server-chain.pem \
+  --key ../tls-certs/localhost-server-key.pem
+# Example TLS app listening at https://localhost:8443
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>Only Root CA Provided<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Now, we can successfully make a request when only adding the root CA as an
+extra CA:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/root-ca-cert.pem https://localhost:8443
+{&quot;success&quot;: true}
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h4>No Extra CA Provided<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Using a vanilla <code class="docutils literal notranslate"><span class="pre">curl</span></code> request still fails:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl https://localhost:8443
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="presenting-the-root-with-the-server-chain">
+<h3><a class="toc-backref" href="#id7">Presenting the Root with the Server Chain</a><a class="headerlink" href="#presenting-the-root-with-the-server-chain" title="Permalink to this headline">¶</a></h3>
+<p>If it was good to present the intermediate, is it good to present the root too?
+The <code class="docutils literal notranslate"><span class="pre">localhost-server-full.pem</span></code> file contains bundles the leaf, intermediate
+and root certificates together.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cd docs/nodejs/
+node server.js \
+  --cert ../tls-certs/localhost-server-full.pem \
+  --key ../tls-certs/localhost-server-key.pem
+# Example TLS app listening at https://localhost:8443
+</pre></div>
+</div>
+<p>However, a vanilla <code class="docutils literal notranslate"><span class="pre">curl</span></code> <strong>still</strong> fails (but now for a different reason)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl https://localhost:8443
+curl: (60) SSL certificate problem: self signed certificate in certificate chain
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">signed</span> <span class="pre">certificate</span> <span class="pre">in</span> <span class="pre">certificate</span> <span class="pre">chain</span></code> error makes sense here
+because we have a custom self-signed root CA.</p>
+<p>Tacking on the root CA will continue to work though:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/root-ca-cert.pem https://localhost:8443
+{&quot;success&quot;: true}
+</pre></div>
+</div>
+<p>Being familiar with this <code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">signed</span> <span class="pre">certificate</span></code> error in other situations
+may be very useful. As we’ll see later in <a class="reference internal" href="#nodejs-client"><span class="std std-ref">Client</span></a>, it’s possible
+to — either intentionally or by mistake — to <strong>replace</strong> the root
+bundle in Node.js client code. For example, if a client needed to connect
+to <code class="docutils literal notranslate"><span class="pre">github.com</span></code>, overriding the root bundle with just the
+<code class="docutils literal notranslate"><span class="pre">DigiCert</span> <span class="pre">High</span> <span class="pre">Assurance</span> <span class="pre">EV</span> <span class="pre">Root</span> <span class="pre">CA</span></code> certificate would still continue to work.
+But, when GitHub rotates their certificate, the code / configuration that used
+to work may stop working with this exact error if GitHub rotated to a
+certificate signed by a different CA.</p>
+</div>
+</div>
+<div class="section" id="client">
+<span id="nodejs-client"></span><h2><a class="toc-backref" href="#id8">Client</a><a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h2>
+<p>As we saw above, there is an apparent disagreement between the <code class="docutils literal notranslate"><span class="pre">--cert</span></code> flag
+(and the Node.js <code class="docutils literal notranslate"><span class="pre">cert</span></code> TLS option) and the <code class="docutils literal notranslate"><span class="pre">*-chain.pem</span></code> suffix. This is not
+an accident. There is a significant amount of confusion using the
+<a class="reference external" href="https://nodejs.org/docs/latest-v14.x/api/tls.html#tls_tls_createsecurecontext_options">TLS options</a> for the typical application developer that doesn’t think
+about TLS very often (or ever).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">cert</span></code> option is typically interpreted as “just the leaf certificate” but
+the documentation makes it clear that <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">certChain</span></code> would be a better
+option name:</p>
+<div class="note admonition">
+<p class="admonition-title">cert</p>
+<p>Cert chains in PEM format … Each cert chain should consist of the PEM
+formatted certificate for a provided private key, followed by the PEM
+formatted intermediate certificates (if any) … If the intermediate
+certificates are not provided, the peer will not be able to validate the
+certificate, and the handshake will fail.</p>
+</div>
+<p>Similarly, the <code class="docutils literal notranslate"><span class="pre">ca</span></code> option is typically interpreted as “just the CA for
+the leaf certificate”, which is ambiguous as-is. However, the interpretation
+of this field is <strong>made worse</strong> by its behavior. The default behavior
+of <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">--cacert</span></code> is to <strong>append</strong> to the system trust store, e.g. specifying
+our custom root CA doesn’t stop us from trusting <code class="docutils literal notranslate"><span class="pre">google.com</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --cacert ../tls-certs/root-ca-cert.pem https://google.com
+&lt;HTML&gt;&lt;HEAD&gt;&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html;charset=utf-8&quot;&gt;
+&lt;TITLE&gt;301 Moved&lt;/TITLE&gt;&lt;/HEAD&gt;&lt;BODY&gt;
+...
+</pre></div>
+</div>
+<p>However, that is <strong>not</strong> the behavior of the <code class="docutils literal notranslate"><span class="pre">ca</span></code> TLS option in Node.js:</p>
+<div class="note admonition">
+<p class="admonition-title">ca</p>
+<p>Optionally override the trusted CA certificates. Default is to trust the
+well-known CAs curated by Mozilla. Mozilla’s CAs are completely replaced when
+CAs are explicitly specified using this option.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="appendix/index.html" class="btn btn-neutral float-right" title="Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="problems.html" class="btn btn-neutral float-left" title="Common Reasons to Debug TLS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

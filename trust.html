@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Trust &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Common Reasons to Debug TLS" href="problems.html" />
+    <link rel="prev" title="Wireshark Tooling" href="wireshark.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Trust</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-intermediates">Why Intermediates?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#revocation">Revocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accidental-vulnerabilities-from-pc-vendors">Accidental Vulnerabilities from PC Vendors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodejs.html">Node.js</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Trust</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/trust.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="trust">
+<h1>Trust<a class="headerlink" href="#trust" title="Permalink to this headline">¶</a></h1>
+<p>Backing up a bit, let’s briefly discuss how trust and validation works. The
+primary components critical to the TLS protocol are cryptographic proof
+of private key ownership and CA signature as well as checking certificate
+attributes like DNS SANs and Key Usages.</p>
+<p>The whole goal of PKI (public key infrastructure) is for “everyone” to agree
+on a small set of public CAs that “we” (i.e. the internet) all can trust.
+For example, that small set is 164 system roots in Keychain Access for macOS
+Big Sur and 138 <code class="docutils literal notranslate"><span class="pre">tls.rootCertificates</span></code> in the Mozilla bundle that ships with
+Node.js 14.15.4.</p>
+<div class="section" id="why-intermediates">
+<h2>Why Intermediates?<a class="headerlink" href="#why-intermediates" title="Permalink to this headline">¶</a></h2>
+<p>Due to the <strong>extreme</strong> sensitivity of a trusted root and the long lifetimes,
+it’s standard practice for root CAs to be completely offline in a hardware
+security module (HSM) and used in <strong>very rare</strong> occasions only to sign
+intermediates. The intermediate CAs are the real workhorses that actually do
+the signing of new leaf certificates (e.g. if as a customer you go on DigiCert
+and request a certificate).</p>
+<p>I like to joke that the CA private keys are buried somewhere under a pyramid
+in Egypt.</p>
+</div>
+<div class="section" id="revocation">
+<h2>Revocation<a class="headerlink" href="#revocation" title="Permalink to this headline">¶</a></h2>
+<p>As we go down a chain, each certificate can be trusted slightly less than the
+one above it. To deal with potential leaks and key cracking, most CAs
+provide revocation lists (CRL) and other more modern methods (OCSP) of checking
+if a certificate remains valid.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>            <span class="n">X509v3</span> <span class="n">CRL</span> <span class="n">Distribution</span> <span class="n">Points</span><span class="p">:</span>
+
+                <span class="n">Full</span> <span class="n">Name</span><span class="p">:</span>
+                  <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">crl3</span><span class="o">.</span><span class="n">digicert</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sha2</span><span class="o">-</span><span class="n">ha</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">g6</span><span class="o">.</span><span class="n">crl</span>
+
+                <span class="n">Full</span> <span class="n">Name</span><span class="p">:</span>
+                  <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">crl4</span><span class="o">.</span><span class="n">digicert</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sha2</span><span class="o">-</span><span class="n">ha</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">g6</span><span class="o">.</span><span class="n">crl</span>
+
+            <span class="n">X509v3</span> <span class="n">Certificate</span> <span class="n">Policies</span><span class="p">:</span>
+                <span class="n">Policy</span><span class="p">:</span> <span class="mf">2.16</span><span class="o">.</span><span class="mf">840.1</span><span class="o">.</span><span class="mf">114412.1</span><span class="o">.</span><span class="mi">1</span>
+                  <span class="n">CPS</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">digicert</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">CPS</span>
+                <span class="n">Policy</span><span class="p">:</span> <span class="mf">2.23</span><span class="o">.</span><span class="mf">140.1</span><span class="o">.</span><span class="mf">2.2</span>
+
+            <span class="n">Authority</span> <span class="n">Information</span> <span class="n">Access</span><span class="p">:</span>
+                <span class="n">OCSP</span> <span class="o">-</span> <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ocsp</span><span class="o">.</span><span class="n">digicert</span><span class="o">.</span><span class="n">com</span>
+                <span class="n">CA</span> <span class="n">Issuers</span> <span class="o">-</span> <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">cacerts</span><span class="o">.</span><span class="n">digicert</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">DigiCertSHA2HighAssuranceServerCA</span><span class="o">.</span><span class="n">crt</span>
+</pre></div>
+</div>
+<p>However, these recovation mechanisms <strong>necessarily</strong> (i.e. by design)
+centralize an inherently decentralized infrastructue (PKI) and can cause
+severe issues if not done well. For example, during an early release of
+Big Sur on November 12, 2020, the <code class="docutils literal notranslate"><span class="pre">ocsp.apple.com</span></code> server collapsed under load
+and the centralized revocation checks caused loading of <strong>all</strong> applications
+to slow to a crawl on every macOS machine in the world.</p>
+</div>
+<div class="section" id="accidental-vulnerabilities-from-pc-vendors">
+<h2>Accidental Vulnerabilities from PC Vendors<a class="headerlink" href="#accidental-vulnerabilities-from-pc-vendors" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes PC vendors or antivirus software will install extra roots into the
+system trust store. The <strong>goal</strong> of such an extra root is to allow tooling
+(from the PC vendor or for the antivirus software) to intercept encrypted
+TLS traffic and then proxy it back to the computer. This way, from the
+perspective of applications on the computer, the traffic is still encrypted,
+but the tools are able to decrypt it.</p>
+<p>However, this is problematic when private keys leak or are exposed for these
+system roots. Once an attacker has a private key for one of the trusted system
+roots, the attacker can impersonate <strong>any</strong> website and the system will trust
+any TLS connection as valid and encrypted.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="problems.html" class="btn btn-neutral float-right" title="Common Reasons to Debug TLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="wireshark.html" class="btn btn-neutral float-left" title="Wireshark Tooling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

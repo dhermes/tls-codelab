@@ -1,0 +1,485 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Generating Leaf Certificate for TLS Client &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Keeping Around Two (or More) Root CAs" href="multiple.html" />
+    <link rel="prev" title="Generating Leaf Certificate for Server" href="server.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nodejs.html">Node.js</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendix</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="root.html">Generating Root CA Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intermediate.html">Generating Intermediate CA Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html">Generating Leaf Certificate for Server</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generating Leaf Certificate for TLS Client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-a-private-key">Generate a Private Key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-a-csr-for-the-intermediate-ca">Generate a CSR for the Intermediate CA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-temporary-files-used-by-the-intermediate-ca-for-tracking">Create “Temporary” Files Used by the Intermediate CA for Tracking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submit-the-csr-to-the-intermediate-ca">Submit the CSR to the Intermediate CA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-full-chain-with-leaf-certificate-intermediate-ca-and-root-ca">Create Full Chain with Leaf Certificate, Intermediate CA and Root CA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="multiple.html">Keeping Around Two (or More) Root CAs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-js.html"><code class="docutils literal notranslate"><span class="pre">server.js</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-js.html"><code class="docutils literal notranslate"><span class="pre">request.js</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Appendix</a> &raquo;</li>
+        
+      <li>Generating Leaf Certificate for TLS Client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/appendix/client.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generating-leaf-certificate-for-tls-client">
+<h1>Generating Leaf Certificate for TLS Client<a class="headerlink" href="#generating-leaf-certificate-for-tls-client" title="Permalink to this headline">¶</a></h1>
+<p>To create a “local” client certificate for use in testing mTLS</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>To make sure we are in the right directory for generating certificates:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">TLS_CERTS_PATH</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&quot;TLS_CERTS_PATH environment variable should be set by the caller.&quot;</span>
+  <span class="nb">exit</span> <span class="m">1</span>
+<span class="k">fi</span>
+
+<span class="c1"># Just change directories into the `tls-certs` path; this is because the</span>
+<span class="c1"># paths (e.g. for the `private_key`) in the `.cnf` files are relative to `./`</span>
+<span class="c1"># and making them absolute is not worth the trouble of worrying about a</span>
+<span class="c1"># specific absolute path always being available.</span>
+<span class="nb">cd</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">TLS_CERTS_PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>This is actually critical because some paths in the <code class="docutils literal notranslate"><span class="pre">openssl</span></code> configuration
+files (<code class="docutils literal notranslate"><span class="pre">.cnf</span></code>) are relative paths starting with <code class="docutils literal notranslate"><span class="pre">./</span></code>.</p>
+</div>
+<div class="section" id="generate-a-private-key">
+<h2>Generate a Private Key<a class="headerlink" href="#generate-a-private-key" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">PRIVATE_KEY</span><span class="o">=</span><span class="s2">&quot;./localhost-client-key.pem&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># In cases where we are regenerating</span>
+openssl genrsa <span class="se">\</span>
+  -out <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  <span class="m">2048</span>
+chmod <span class="m">400</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Notice we make sure to remove any lingering private key (if a previously
+generated one exists) and we make sure the generated file is readonly and
+only for the current user (permissions <code class="docutils literal notranslate"><span class="pre">0400</span></code>).</p>
+</div>
+<div class="section" id="generate-a-csr-for-the-intermediate-ca">
+<h2>Generate a CSR for the Intermediate CA<a class="headerlink" href="#generate-a-csr-for-the-intermediate-ca" title="Permalink to this headline">¶</a></h2>
+<p>A Certificate Signing Request (CSR) is typically used with public certificate
+authorities (e.g. think DigiCert) so that a customer can request a <strong>signed</strong>
+public certificate without having to share their private key with the CA.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CSR</span><span class="o">=</span><span class="s2">&quot;./localhost-client-csr.pem&quot;</span>
+<span class="nv">CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;./localhost-client.cnf&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CSR</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># Clean up from previous runs</span>
+openssl req <span class="se">\</span>
+  -config <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CONFIG_FILE</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -key <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -new <span class="se">\</span>
+  -sha256 <span class="se">\</span>
+  -out <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CSR</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-temporary-files-used-by-the-intermediate-ca-for-tracking">
+<h2>Create “Temporary” Files Used by the Intermediate CA for Tracking<a class="headerlink" href="#create-temporary-files-used-by-the-intermediate-ca-for-tracking" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">INTERMEDIATE_CA_SERIAL_ID</span><span class="o">=</span><span class="m">1000</span>
+<span class="nv">INTERMEDIATE_CA_DATABASE</span><span class="o">=</span><span class="s2">&quot;./intermediate-ca-database.txt&quot;</span>
+<span class="nv">INTERMEDIATE_CA_SERIAL_TXT</span><span class="o">=</span><span class="s2">&quot;./intermediate-ca-serial.txt&quot;</span>
+touch <span class="s2">&quot;</span><span class="si">${</span><span class="nv">INTERMEDIATE_CA_DATABASE</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">INTERMEDIATE_CA_SERIAL_ID</span><span class="si">}</span><span class="s2">&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">INTERMEDIATE_CA_SERIAL_TXT</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="submit-the-csr-to-the-intermediate-ca">
+<h2>Submit the CSR to the Intermediate CA<a class="headerlink" href="#submit-the-csr-to-the-intermediate-ca" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">PUBLIC_CERTIFICATE</span><span class="o">=</span><span class="s2">&quot;./localhost-client-cert.pem&quot;</span>
+<span class="nv">INTERMEDIATE_CA_CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;./intermediate-ca.cnf&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># In cases where we are regenerating</span>
+openssl ca <span class="se">\</span>
+  -batch <span class="se">\</span>
+  -config <span class="s2">&quot;</span><span class="si">${</span><span class="nv">INTERMEDIATE_CA_CONFIG_FILE</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -extensions client_cert <span class="se">\</span>
+  -days <span class="m">375</span> <span class="se">\</span>
+  -notext <span class="se">\</span>
+  -md sha256 <span class="se">\</span>
+  -in <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CSR</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -out <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>
+chmod <span class="m">444</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-full-chain-with-leaf-certificate-intermediate-ca-and-root-ca">
+<h2>Create Full Chain with Leaf Certificate, Intermediate CA and Root CA<a class="headerlink" href="#create-full-chain-with-leaf-certificate-intermediate-ca-and-root-ca" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CERTIFICATE_CHAIN</span><span class="o">=</span><span class="s2">&quot;./localhost-client-chain.pem&quot;</span>
+<span class="nv">INTERMEDIATE_CA_PUBLIC_CERTIFICATE</span><span class="o">=</span><span class="s2">&quot;./intermediate-ca-cert.pem&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CERTIFICATE_CHAIN</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># In cases where we are regenerating</span>
+cat <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CERTIFICATE_CHAIN</span><span class="si">}</span><span class="s2">&quot;</span>
+cat <span class="s2">&quot;</span><span class="si">${</span><span class="nv">INTERMEDIATE_CA_PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span> &gt;&gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CERTIFICATE_CHAIN</span><span class="si">}</span><span class="s2">&quot;</span>
+chmod <span class="m">444</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CERTIFICATE_CHAIN</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>After generating, the private key will resemble</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEArN9vWNOsj3LvW1mLU+8+m0I/oQxlh0pujP4EfTPyV22IIxuT
+lQA0woUibB1PAWCzSKI6GbKOujGq2vekV1lrpTh1t1XUa8FMuekAg8QlduoMXyXj
+5I48eSjRZWr36H1jDNSy8xPdaT1a/NZ8kyxLIERdQQ3FcYP+6M8hpwy1yS4CY8nB
+ky6H7eQLsV2jnGxBLR08aIPu5vv59zdsr1PSl8CH6ws3UnAiBVBYkbH09LEx8eCD
+HzbKzwyw4pZ708nf80A5YlgiVGQLnLSc7Sd+HuxP8eGXZGGoP7/LQuxLrzXRJF+K
+ed4B7CtlJ/10a1DQIXMX9cPKdL59IiopU+DZCQIDAQABAoIBACl3TtYXsASYpSFc
+UTdI49OKCIkw2AmjqPDY3WrK0w51j3ocW0IaUo12MdONFC5Ya6i4gQc49VNkJn9v
+d1Qcdt2itVnMlK9kJmtRoHX6zqG/ckhAZnGkTI0jZVbWWbDCosepHWOBGFLuDK0p
+JaiHr12GCHhaPUoFR1fAl2niephOs8K0pu+IIK9Tt72tJsBw7NB5xrN71VHStvUC
+yjAAP2j42jSSUMs1pHfvPRD8VZ1U+eOFsiqEkoXilTPviZy4JHg3lrDci8Dg2EKg
+pX0vcJG/2DF5s6RYbhRFfESQh5hwgmi/hOpX93b0hwtouuLZZ+g9EX5OBqlTS/yW
+WT9kLCECgYEA4lpm8z72Hl99Vkdc1VE4BJKSIR9HIiZSoBPSJzvD44oGyilcvM02
+Bid4ZwjHZV51BKBKhodve+k+rr3QloeuLJt73xnvVebJLZ3Amimos7z/QGNHexbq
+4MrzIPamZamogOBsEwrHrAalvwiiCOsJbBY6kqYbJXnZxaRqerN4ZbcCgYEAw4PX
+o+t9lmGkvK/iP4vUASxZe7zigLUQ6TNb53limyIs218/IdcRd34oYAIvHGRtC3AU
+AUeL8uFKxCeP3pVtXd+VNYldx6ZVBMNFLFu2U4xCn36tTwNmEFYgKnXBE1fjHyEi
+iR8layZWIRuVKWQRilHAX92r82tLB77ZxfvGtz8CgYEAr4QuBDw0GEUvKTHY2EhM
+Sa9lxG0+eUqCE0KLWITNVqj2rtf34ya013zPrgVuqDngPyAT6dEnL0wjoNfq4G6B
+LnG6UbsIjPGR2d9TM7dN62GIA+N30AhrRLfaYxse2AIAeT6MTw+y2L+m0kTdcFDg
+U4HBFWnb7ulXZhwhvNdham0CgYAVkzb4n8P8FEpZiA8vc/6xInO9c9qK2XBES6aY
+pIx9EghhLOGKmnES/pj1/0ezmmFuIbATdBG9e58EhlkZ9uNauJF+luoCXhiDrgi0
+HGrCTXgMoa3+SiG5K8fg552mxMwLY1ysRQOcD17xyFltd913pg3UhmGzOuPMtwLR
+FjeXgQKBgQC9XEM0ehUDLh20OPz+ibptyggGJpKqgikRTE8LjIV1DHuMFIlL29fz
+Q3/dsCtuMxdL5/LmWQZ3WfARV5vTK4lyGAHwkwmc3XEGQXk79tSKN3kniR6V0VZQ
+93kKP9fO+kyBGo3yh3rRsLzd61sjsm5Q6L0JZcEKTu7iUWWzBtL+VA==
+-----END RSA PRIVATE KEY-----
+</pre></div>
+</div>
+<p>and the public certificate will resemble</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN CERTIFICATE-----
+MIIFDzCCAvegAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwfjELMAkGA1UEBhMCVVMx
+EzARBgNVBAgMCkNhbGlmb3JuaWExEDAOBgNVBAoMB0luaXRlY2gxJjAkBgNVBAsM
+HUluaXRlY2ggQ2VydGlmaWNhdGUgQXV0aG9yaXR5MSAwHgYDVQQDDBdJbml0ZWNo
+IEludGVybWVkaWF0ZSBDQTAeFw0yMDEyMzAxOTMwMzVaFw0yMjAxMDkxOTMwMzVa
+MHkxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRAwDgYDVQQKDAdJ
+bml0ZWNoMSYwJAYDVQQLDB1Jbml0ZWNoIENlcnRpZmljYXRlIEF1dGhvcml0eTEb
+MBkGA1UEAwwSSW5pdGVjaCBEZXYgQ2xpZW50MIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEArN9vWNOsj3LvW1mLU+8+m0I/oQxlh0pujP4EfTPyV22IIxuT
+lQA0woUibB1PAWCzSKI6GbKOujGq2vekV1lrpTh1t1XUa8FMuekAg8QlduoMXyXj
+5I48eSjRZWr36H1jDNSy8xPdaT1a/NZ8kyxLIERdQQ3FcYP+6M8hpwy1yS4CY8nB
+ky6H7eQLsV2jnGxBLR08aIPu5vv59zdsr1PSl8CH6ws3UnAiBVBYkbH09LEx8eCD
+HzbKzwyw4pZ708nf80A5YlgiVGQLnLSc7Sd+HuxP8eGXZGGoP7/LQuxLrzXRJF+K
+ed4B7CtlJ/10a1DQIXMX9cPKdL59IiopU+DZCQIDAQABo4GbMIGYMAkGA1UdEwQC
+MAAwHQYDVR0OBBYEFEbLjRZ1Yrr2JCXxawpUo1tjIvfjMB8GA1UdIwQYMBaAFPX+
+p6HeWc9R9IPCsGbA1x8gnCOFMA4GA1UdDwEB/wQEAwIF4DATBgNVHSUEDDAKBggr
+BgEFBQcDAjAmBgNVHREEHzAdhhtpZGVudGl0eTovL2xvY2FsaG9zdC5jbGllbnQw
+DQYJKoZIhvcNAQELBQADggIBACgQfO8vVyJMtv3bo1rHEQWRKwtRVOhTGz/aNlM7
+gQIIms9W4CPLRE6KZR2wd3HJ9P4zR1T3HCmfXEj32zTImwssmBIKFVUNCkuv/uVq
+rGAopXaFUUUV+PHGzLVSur9pspVEbSrTtePOAVW9gIfMWn5rS1RmPCbqUN9MVLQg
+I3wnaXtCC6dLDSn3bzAT7uKLzuskjGHxOSA0GoDm6k/iBNgvMw4kZilaRre3fCTP
+smvkC7HSYpLb6XZU1LXnbePk5Vs3VWEFdMbArduhzxzbRxyAVvGAgXGPRFuetn8c
+A3nFx+h5jG32jIufeimI5uTvVv8wfuctr8g30kVBVgWVXe1GZMELo9WPpbGhLaJ2
+FPLuZ5yZDKqNhn6RQnqNZeWWBxYQ273i6ZnXc4IYMGqgS6mRc23bP01UCcHfCmdp
+KuXbdDtc/OWzJE/F49T13jKMsrQu5vCjczkgumyZBSkdyXBx54pOiBAONIROswYI
+iTY/4aA4Bru00u2QhpRtcWN2sK18bP+WMR+jjgx8VUkOi+fVWKjWkpypMUU99k1B
+QOmGVdyVv4BaBJOdHca3CZ3W6Qm+498REFkvYGAGFILzidXkBwDDLZSyAX2dHl26
+cSubfRaoq9n5S4jKd9mPugMpoPck3eAyJFT4hpiEWHm/8s/2yaCRi4NFrq2kpQp6
+qpuC
+-----END CERTIFICATE-----
+</pre></div>
+</div>
+<p>Running <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">x509</span> <span class="pre">-noout</span> <span class="pre">-text</span> <span class="pre">-in</span> <span class="pre">.../localhost-client-cert.pem</span></code> on the
+public CA certificate should produce attributes of the form</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 4096 (0x1000)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Intermediate CA
+        Validity
+            Not Before: Dec 30 19:30:35 2020 GMT
+            Not After : Jan  9 19:30:35 2022 GMT
+        Subject: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Dev Client
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:ac:df:6f:58:d3:ac:8f:72:ef:5b:59:8b:53:ef:
+                    3e:9b:42:3f:a1:0c:65:87:4a:6e:8c:fe:04:7d:33:
+                    f2:57:6d:88:23:1b:93:95:00:34:c2:85:22:6c:1d:
+                    4f:01:60:b3:48:a2:3a:19:b2:8e:ba:31:aa:da:f7:
+                    a4:57:59:6b:a5:38:75:b7:55:d4:6b:c1:4c:b9:e9:
+                    00:83:c4:25:76:ea:0c:5f:25:e3:e4:8e:3c:79:28:
+                    d1:65:6a:f7:e8:7d:63:0c:d4:b2:f3:13:dd:69:3d:
+                    5a:fc:d6:7c:93:2c:4b:20:44:5d:41:0d:c5:71:83:
+                    fe:e8:cf:21:a7:0c:b5:c9:2e:02:63:c9:c1:93:2e:
+                    87:ed:e4:0b:b1:5d:a3:9c:6c:41:2d:1d:3c:68:83:
+                    ee:e6:fb:f9:f7:37:6c:af:53:d2:97:c0:87:eb:0b:
+                    37:52:70:22:05:50:58:91:b1:f4:f4:b1:31:f1:e0:
+                    83:1f:36:ca:cf:0c:b0:e2:96:7b:d3:c9:df:f3:40:
+                    39:62:58:22:54:64:0b:9c:b4:9c:ed:27:7e:1e:ec:
+                    4f:f1:e1:97:64:61:a8:3f:bf:cb:42:ec:4b:af:35:
+                    d1:24:5f:8a:79:de:01:ec:2b:65:27:fd:74:6b:50:
+                    d0:21:73:17:f5:c3:ca:74:be:7d:22:2a:29:53:e0:
+                    d9:09
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                46:CB:8D:16:75:62:BA:F6:24:25:F1:6B:0A:54:A3:5B:63:22:F7:E3
+            X509v3 Authority Key Identifier: 
+                keyid:F5:FE:A7:A1:DE:59:CF:51:F4:83:C2:B0:66:C0:D7:1F:20:9C:23:85
+
+            X509v3 Key Usage: critical
+                Digital Signature, Non Repudiation, Key Encipherment
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Subject Alternative Name: 
+                URI:identity://localhost.client
+    Signature Algorithm: sha256WithRSAEncryption
+         28:10:7c:ef:2f:57:22:4c:b6:fd:db:a3:5a:c7:11:05:91:2b:
+         0b:51:54:e8:53:1b:3f:da:36:53:3b:81:02:08:9a:cf:56:e0:
+         23:cb:44:4e:8a:65:1d:b0:77:71:c9:f4:fe:33:47:54:f7:1c:
+         29:9f:5c:48:f7:db:34:c8:9b:0b:2c:98:12:0a:15:55:0d:0a:
+         4b:af:fe:e5:6a:ac:60:28:a5:76:85:51:45:15:f8:f1:c6:cc:
+         b5:52:ba:bf:69:b2:95:44:6d:2a:d3:b5:e3:ce:01:55:bd:80:
+         87:cc:5a:7e:6b:4b:54:66:3c:26:ea:50:df:4c:54:b4:20:23:
+         7c:27:69:7b:42:0b:a7:4b:0d:29:f7:6f:30:13:ee:e2:8b:ce:
+         eb:24:8c:61:f1:39:20:34:1a:80:e6:ea:4f:e2:04:d8:2f:33:
+         0e:24:66:29:5a:46:b7:b7:7c:24:cf:b2:6b:e4:0b:b1:d2:62:
+         92:db:e9:76:54:d4:b5:e7:6d:e3:e4:e5:5b:37:55:61:05:74:
+         c6:c0:ad:db:a1:cf:1c:db:47:1c:80:56:f1:80:81:71:8f:44:
+         5b:9e:b6:7f:1c:03:79:c5:c7:e8:79:8c:6d:f6:8c:8b:9f:7a:
+         29:88:e6:e4:ef:56:ff:30:7e:e7:2d:af:c8:37:d2:45:41:56:
+         05:95:5d:ed:46:64:c1:0b:a3:d5:8f:a5:b1:a1:2d:a2:76:14:
+         f2:ee:67:9c:99:0c:aa:8d:86:7e:91:42:7a:8d:65:e5:96:07:
+         16:10:db:bd:e2:e9:99:d7:73:82:18:30:6a:a0:4b:a9:91:73:
+         6d:db:3f:4d:54:09:c1:df:0a:67:69:2a:e5:db:74:3b:5c:fc:
+         e5:b3:24:4f:c5:e3:d4:f5:de:32:8c:b2:b4:2e:e6:f0:a3:73:
+         39:20:ba:6c:99:05:29:1d:c9:70:71:e7:8a:4e:88:10:0e:34:
+         84:4e:b3:06:08:89:36:3f:e1:a0:38:06:bb:b4:d2:ed:90:86:
+         94:6d:71:63:76:b0:ad:7c:6c:ff:96:31:1f:a3:8e:0c:7c:55:
+         49:0e:8b:e7:d5:58:a8:d6:92:9c:a9:31:45:3d:f6:4d:41:40:
+         e9:86:55:dc:95:bf:80:5a:04:93:9d:1d:c6:b7:09:9d:d6:e9:
+         09:be:e3:df:11:10:59:2f:60:60:06:14:82:f3:89:d5:e4:07:
+         00:c3:2d:94:b2:01:7d:9d:1e:5d:ba:71:2b:9b:7d:16:a8:ab:
+         d9:f9:4b:88:ca:77:d9:8f:ba:03:29:a0:f7:24:dd:e0:32:24:
+         54:f8:86:98:84:58:79:bf:f2:cf:f6:c9:a0:91:8b:83:45:ae:
+         ad:a4:a5:0a:7a:aa:9b:82
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://jamielinux.com/docs/openssl-certificate-authority/sign-client-and-client-certificates.html">Sign server and client certificates</a> tutorial from Jamie Nguyen</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="multiple.html" class="btn btn-neutral float-right" title="Keeping Around Two (or More) Root CAs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="server.html" class="btn btn-neutral float-left" title="Generating Leaf Certificate for Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

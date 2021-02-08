@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Generating Root CA Certificate &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generating Intermediate CA Certificate" href="intermediate.html" />
+    <link rel="prev" title="Appendix" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nodejs.html">Node.js</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendix</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generating Root CA Certificate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-a-private-key">Generate a Private Key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#self-sign-a-public-certificate">Self-sign a Public Certificate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intermediate.html">Generating Intermediate CA Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html">Generating Leaf Certificate for Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Generating Leaf Certificate for TLS Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple.html">Keeping Around Two (or More) Root CAs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-js.html"><code class="docutils literal notranslate"><span class="pre">server.js</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-js.html"><code class="docutils literal notranslate"><span class="pre">request.js</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Appendix</a> &raquo;</li>
+        
+      <li>Generating Root CA Certificate</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/appendix/root.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generating-root-ca-certificate">
+<h1>Generating Root CA Certificate<a class="headerlink" href="#generating-root-ca-certificate" title="Permalink to this headline">¶</a></h1>
+<p>To create a “local” root certificate authority for testing purposes</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>To make sure we are in the right directory for generating certificates:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">TLS_CERTS_PATH</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&quot;TLS_CERTS_PATH environment variable should be set by the caller.&quot;</span>
+  <span class="nb">exit</span> <span class="m">1</span>
+<span class="k">fi</span>
+
+<span class="c1"># Just change directories into the `tls-certs` path; this is because the</span>
+<span class="c1"># paths (e.g. for the `private_key`) in the `.cnf` files are relative to `./`</span>
+<span class="c1"># and making them absolute is not worth the trouble of worrying about a</span>
+<span class="c1"># specific absolute path always being available.</span>
+<span class="nb">cd</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">TLS_CERTS_PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>This is actually critical because some paths in the <code class="docutils literal notranslate"><span class="pre">openssl</span></code> configuration
+files (<code class="docutils literal notranslate"><span class="pre">.cnf</span></code>) are relative paths starting with <code class="docutils literal notranslate"><span class="pre">./</span></code>.</p>
+</div>
+<div class="section" id="generate-a-private-key">
+<h2>Generate a Private Key<a class="headerlink" href="#generate-a-private-key" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">PRIVATE_KEY</span><span class="o">=</span><span class="s2">&quot;./root-ca-key.pem&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># In cases where we are regenerating</span>
+openssl genrsa <span class="se">\</span>
+  -out <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  <span class="m">4096</span>
+chmod <span class="m">400</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Notice we make sure to remove any lingering private key (if a previously
+generated one exists) and we make sure the generated file is readonly and
+only for the current user (permissions <code class="docutils literal notranslate"><span class="pre">0400</span></code>).</p>
+</div>
+<div class="section" id="self-sign-a-public-certificate">
+<h2>Self-sign a Public Certificate<a class="headerlink" href="#self-sign-a-public-certificate" title="Permalink to this headline">¶</a></h2>
+<p>Using an <code class="docutils literal notranslate"><span class="pre">openssl</span></code> configuration file (<code class="docutils literal notranslate"><span class="pre">.cnf</span></code>) that</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">PUBLIC_CERTIFICATE</span><span class="o">=</span><span class="s2">&quot;./root-ca-cert.pem&quot;</span>
+<span class="nv">CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;./root-ca.cnf&quot;</span>
+rm -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># In cases where we are regenerating</span>
+openssl req <span class="se">\</span>
+  -config <span class="s2">&quot;</span><span class="si">${</span><span class="nv">CONFIG_FILE</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -key <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PRIVATE_KEY</span><span class="si">}</span><span class="s2">&quot;</span> <span class="se">\</span>
+  -new <span class="se">\</span>
+  -x509 <span class="se">\</span>
+  -days <span class="m">7300</span> <span class="se">\</span>
+  -sha256 <span class="se">\</span>
+  -extensions v3_ca <span class="se">\</span>
+  -out <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>
+chmod <span class="m">444</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">PUBLIC_CERTIFICATE</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Here we make the root CA certificate readonly to <strong>all</strong> users on the machine,
+e.g. so other users could add this CA to a trust store.</p>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>After generating, the private key will resemble</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN RSA PRIVATE KEY-----
+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
+-----END RSA PRIVATE KEY-----
+</pre></div>
+</div>
+<p>and the public certificate will resemble</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>-----BEGIN CERTIFICATE-----
+MIIF0jCCA7qgAwIBAgIJAK+JDPv125W2MA0GCSqGSIb3DQEBCwUAMHYxCzAJBgNV
+BAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRAwDgYDVQQKDAdJbml0ZWNoMSYw
+JAYDVQQLDB1Jbml0ZWNoIENlcnRpZmljYXRlIEF1dGhvcml0eTEYMBYGA1UEAwwP
+SW5pdGVjaCBSb290IENBMB4XDTIwMTIyNTIxNDM0M1oXDTQwMTIyMDIxNDM0M1ow
+djELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExEDAOBgNVBAoMB0lu
+aXRlY2gxJjAkBgNVBAsMHUluaXRlY2ggQ2VydGlmaWNhdGUgQXV0aG9yaXR5MRgw
+FgYDVQQDDA9Jbml0ZWNoIFJvb3QgQ0EwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAw
+ggIKAoICAQC8IVaMJvwfwlZwp66vb5tF9bE5L6emNHm2UvPSb5uzFqyMEfywm5Xo
+USqmEK051pT0OzKPmEqOtHUQ59xR6sc9WShD3XljhaxQVyYFQRnprMUWZIOqbQ8w
+uMjCD3OHj7ogyDEoqq7ET+zDMOiPTp4i4UgWMhY1M4NrTcu4emVYTUamslof1CH7
+0KFO77pUZPOhvLMzxSdF5z1m6StMlay6mgqwsDmq4rgqBsWK/LtdFfpuHGZKMSPc
+K5Bgr5PaHSEyIrIu8Oh0z7wMEpdCMP12cUvyE88cpCr4KQzVMJybVk6cC57GnQ8Z
+NuIRsrX+p8bYzfkaZ7dCFphE4KsCubT3zRVA5APNumM5q0egK+Uqc6VhOBFYfF5t
+t+QQr5K2t/REGfhnGxUVBkkY9nGK3tDKPhhG3JBvdVmJLPP5aVs9KwQPTPVpnXjB
+F109x6hQr2cHsL0gMGNuF8znQWTP5rGFSaeQQYzY7iKGc00kAZkWca0w/A8LYtxy
+Wjn5v/HYpQEnzWaXicFElpU0S+xXNH9zuqaD9/tVy68x3fMpo49JLAXfIRb/JdUs
+f/Jwu1uRDhhE5vtzlkwD8UuJt8PMPWVGeeLinlLzpazWz9AmASt+KLqOX4tLehhG
+fNEnOe0r2iPyd18ZH9bw7ZYWMXTBxITonIa/YPVOPtj2/SUDbX61uwIDAQABo2Mw
+YTAdBgNVHQ4EFgQURfh4/yKC8GJm8dsO4wMcC/XPqHYwHwYDVR0jBBgwFoAURfh4
+/yKC8GJm8dsO4wMcC/XPqHYwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
+AgQwDQYJKoZIhvcNAQELBQADggIBAKb2DyqgvyzsaqGDUupa0n50p3W9AN6qE9pV
+8b2UnXGyeKF8TEvO4r7f1r0Fsg9KU+Yt9luzcGk/L/U1tUQ6V0v8KQtm5+LQyDS9
+Bga9GxrxaQAw1IRo9WxK2uO2o86amr+lNvSU08IoKPdoKN7SLQwC8jxkJG598j7k
+Y7vcmDYA9UOnsRs+kk8gdtTZ2sEkamB/Or55eWzwYSVwjlmZhZayrV+BEPSStxEY
+mFl69Z53zUxHW6RmzMqs5hTK0tXY78aHCh5heBQAx27icwNQxPF8SNbWI+r8OpWa
+vqpQz7qyiteRGUA4zJ8al8HIOWnLtT9MQiusDFbzzHt5AnBDiK6Lpj3fnyi/AGWl
+0WU/aGfSMRvlaLc9B1FQPu96BAriI9uFpNZWSi+s5HLFtajqbH6Pta5UVuOBZzfM
++kgVpNdTC7Q4YVY6msFhRPtkOsDPKY6ERQkmdWbRVjm90tUY7DwOUItvzIG+Z8cZ
+eF7V6dMkOcEOHkEJcykUeXueHwHvxHCG8sVpgQdR23WnYc7JGGTmLfucRIww8qla
+Jq0pI3WknrJZgiX2+xqY+XwLjjWWO2z7jFv/1TDhG9xXmlUvn8lS+5FCQYjfEXu+
+xny48XY5U4CM/3yOVrl/Yndz1b+hKgwQUY5VOTA+kHS4NoLnof/zSacPMqQunzLT
+Ygp5o8W9
+-----END CERTIFICATE-----
+</pre></div>
+</div>
+<p>Running <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">x509</span> <span class="pre">-noout</span> <span class="pre">-text</span> <span class="pre">-in</span> <span class="pre">.../root-ca-cert.pem</span></code> on the public CA
+certificate should produce attributes of the form</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 12648655304747881910 (0xaf890cfbf5db95b6)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Root CA
+        Validity
+            Not Before: Dec 25 21:43:43 2020 GMT
+            Not After : Dec 20 21:43:43 2040 GMT
+        Subject: C=US, ST=California, O=Initech, OU=Initech Certificate Authority, CN=Initech Root CA
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (4096 bit)
+                Modulus:
+                    00:bc:21:56:8c:26:fc:1f:c2:56:70:a7:ae:af:6f:
+                    9b:45:f5:b1:39:2f:a7:a6:34:79:b6:52:f3:d2:6f:
+                    9b:b3:16:ac:8c:11:fc:b0:9b:95:e8:51:2a:a6:10:
+                    ad:39:d6:94:f4:3b:32:8f:98:4a:8e:b4:75:10:e7:
+                    dc:51:ea:c7:3d:59:28:43:dd:79:63:85:ac:50:57:
+                    26:05:41:19:e9:ac:c5:16:64:83:aa:6d:0f:30:b8:
+                    c8:c2:0f:73:87:8f:ba:20:c8:31:28:aa:ae:c4:4f:
+                    ec:c3:30:e8:8f:4e:9e:22:e1:48:16:32:16:35:33:
+                    83:6b:4d:cb:b8:7a:65:58:4d:46:a6:b2:5a:1f:d4:
+                    21:fb:d0:a1:4e:ef:ba:54:64:f3:a1:bc:b3:33:c5:
+                    27:45:e7:3d:66:e9:2b:4c:95:ac:ba:9a:0a:b0:b0:
+                    39:aa:e2:b8:2a:06:c5:8a:fc:bb:5d:15:fa:6e:1c:
+                    66:4a:31:23:dc:2b:90:60:af:93:da:1d:21:32:22:
+                    b2:2e:f0:e8:74:cf:bc:0c:12:97:42:30:fd:76:71:
+                    4b:f2:13:cf:1c:a4:2a:f8:29:0c:d5:30:9c:9b:56:
+                    4e:9c:0b:9e:c6:9d:0f:19:36:e2:11:b2:b5:fe:a7:
+                    c6:d8:cd:f9:1a:67:b7:42:16:98:44:e0:ab:02:b9:
+                    b4:f7:cd:15:40:e4:03:cd:ba:63:39:ab:47:a0:2b:
+                    e5:2a:73:a5:61:38:11:58:7c:5e:6d:b7:e4:10:af:
+                    92:b6:b7:f4:44:19:f8:67:1b:15:15:06:49:18:f6:
+                    71:8a:de:d0:ca:3e:18:46:dc:90:6f:75:59:89:2c:
+                    f3:f9:69:5b:3d:2b:04:0f:4c:f5:69:9d:78:c1:17:
+                    5d:3d:c7:a8:50:af:67:07:b0:bd:20:30:63:6e:17:
+                    cc:e7:41:64:cf:e6:b1:85:49:a7:90:41:8c:d8:ee:
+                    22:86:73:4d:24:01:99:16:71:ad:30:fc:0f:0b:62:
+                    dc:72:5a:39:f9:bf:f1:d8:a5:01:27:cd:66:97:89:
+                    c1:44:96:95:34:4b:ec:57:34:7f:73:ba:a6:83:f7:
+                    fb:55:cb:af:31:dd:f3:29:a3:8f:49:2c:05:df:21:
+                    16:ff:25:d5:2c:7f:f2:70:bb:5b:91:0e:18:44:e6:
+                    fb:73:96:4c:03:f1:4b:89:b7:c3:cc:3d:65:46:79:
+                    e2:e2:9e:52:f3:a5:ac:d6:cf:d0:26:01:2b:7e:28:
+                    ba:8e:5f:8b:4b:7a:18:46:7c:d1:27:39:ed:2b:da:
+                    23:f2:77:5f:19:1f:d6:f0:ed:96:16:31:74:c1:c4:
+                    84:e8:9c:86:bf:60:f5:4e:3e:d8:f6:fd:25:03:6d:
+                    7e:b5:bb
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                45:F8:78:FF:22:82:F0:62:66:F1:DB:0E:E3:03:1C:0B:F5:CF:A8:76
+            X509v3 Authority Key Identifier: 
+                keyid:45:F8:78:FF:22:82:F0:62:66:F1:DB:0E:E3:03:1C:0B:F5:CF:A8:76
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Certificate Sign
+    Signature Algorithm: sha256WithRSAEncryption
+         a6:f6:0f:2a:a0:bf:2c:ec:6a:a1:83:52:ea:5a:d2:7e:74:a7:
+         75:bd:00:de:aa:13:da:55:f1:bd:94:9d:71:b2:78:a1:7c:4c:
+         4b:ce:e2:be:df:d6:bd:05:b2:0f:4a:53:e6:2d:f6:5b:b3:70:
+         69:3f:2f:f5:35:b5:44:3a:57:4b:fc:29:0b:66:e7:e2:d0:c8:
+         34:bd:06:06:bd:1b:1a:f1:69:00:30:d4:84:68:f5:6c:4a:da:
+         e3:b6:a3:ce:9a:9a:bf:a5:36:f4:94:d3:c2:28:28:f7:68:28:
+         de:d2:2d:0c:02:f2:3c:64:24:6e:7d:f2:3e:e4:63:bb:dc:98:
+         36:00:f5:43:a7:b1:1b:3e:92:4f:20:76:d4:d9:da:c1:24:6a:
+         60:7f:3a:be:79:79:6c:f0:61:25:70:8e:59:99:85:96:b2:ad:
+         5f:81:10:f4:92:b7:11:18:98:59:7a:f5:9e:77:cd:4c:47:5b:
+         a4:66:cc:ca:ac:e6:14:ca:d2:d5:d8:ef:c6:87:0a:1e:61:78:
+         14:00:c7:6e:e2:73:03:50:c4:f1:7c:48:d6:d6:23:ea:fc:3a:
+         95:9a:be:aa:50:cf:ba:b2:8a:d7:91:19:40:38:cc:9f:1a:97:
+         c1:c8:39:69:cb:b5:3f:4c:42:2b:ac:0c:56:f3:cc:7b:79:02:
+         70:43:88:ae:8b:a6:3d:df:9f:28:bf:00:65:a5:d1:65:3f:68:
+         67:d2:31:1b:e5:68:b7:3d:07:51:50:3e:ef:7a:04:0a:e2:23:
+         db:85:a4:d6:56:4a:2f:ac:e4:72:c5:b5:a8:ea:6c:7e:8f:b5:
+         ae:54:56:e3:81:67:37:cc:fa:48:15:a4:d7:53:0b:b4:38:61:
+         56:3a:9a:c1:61:44:fb:64:3a:c0:cf:29:8e:84:45:09:26:75:
+         66:d1:56:39:bd:d2:d5:18:ec:3c:0e:50:8b:6f:cc:81:be:67:
+         c7:19:78:5e:d5:e9:d3:24:39:c1:0e:1e:41:09:73:29:14:79:
+         7b:9e:1f:01:ef:c4:70:86:f2:c5:69:81:07:51:db:75:a7:61:
+         ce:c9:18:64:e6:2d:fb:9c:44:8c:30:f2:a9:5a:26:ad:29:23:
+         75:a4:9e:b2:59:82:25:f6:fb:1a:98:f9:7c:0b:8e:35:96:3b:
+         6c:fb:8c:5b:ff:d5:30:e1:1b:dc:57:9a:55:2f:9f:c9:52:fb:
+         91:42:41:88:df:11:7b:be:c6:7c:b8:f1:76:39:53:80:8c:ff:
+         7c:8e:56:b9:7f:62:77:73:d5:bf:a1:2a:0c:10:51:8e:55:39:
+         30:3e:90:74:b8:36:82:e7:a1:ff:f3:49:a7:0f:32:a4:2e:9f:
+         32:d3:62:0a:79:a3:c5:bd
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html">Create the root pair</a> tutorial from Jamie Nguyen</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="intermediate.html" class="btn btn-neutral float-right" title="Generating Intermediate CA Certificate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Appendix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Common Reasons to Debug TLS &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Node.js" href="nodejs.html" />
+    <link rel="prev" title="Trust" href="trust.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trust.html">Trust</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Common Reasons to Debug TLS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#misconfiguration">Misconfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mutual-tls">Mutual TLS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodejs.html">Node.js</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Common Reasons to Debug TLS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/problems.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="common-reasons-to-debug-tls">
+<h1>Common Reasons to Debug TLS<a class="headerlink" href="#common-reasons-to-debug-tls" title="Permalink to this headline">¶</a></h1>
+<p>There are at least two unique reasons to care about this as it pertains to
+integrating with partners and external APIs.</p>
+<div class="section" id="misconfiguration">
+<span id="id1"></span><h2>Misconfiguration<a class="headerlink" href="#misconfiguration" title="Permalink to this headline">¶</a></h2>
+<p>The first is in cases where a partner has made a mistake in configuring
+their certificates in a server. For example, consider a fictional API
+server <code class="docutils literal notranslate"><span class="pre">initech.dev.invalid</span></code> that does not present an intermediate
+certificate:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ openssl s_client -connect initech.dev.invalid:443 -servername initech.dev.invalid
+CONNECTED(00000005)
+depth=0 C = US, ST = California, O = Initech, OU = Initech Certificate Authority, CN = Initech Dev Server
+verify error:num=20:unable to get local issuer certificate
+verify return:1
+depth=0 C = US, ST = California, O = Initech, OU = Initech Certificate Authority, CN = Initech Dev Server
+verify error:num=21:unable to verify the first certificate
+verify return:1
+---
+Certificate chain
+ 0 s:/C=US/ST=California/O=Initech/OU=Initech Certificate Authority/CN=Initech Dev Server
+   i:/C=US/ST=California/O=Initech/OU=Initech Certificate Authority/CN=Initech Intermediate CA
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIFAzCCAuugAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwfjELMAkGA1UEBhMCVVMx
+...
+</pre></div>
+</div>
+<p>Since intermediate certificates will not be stored in our system root store,
+in these situations we need to modify the root bundle (e.g. via the <code class="docutils literal notranslate"><span class="pre">cert</span></code>
+TLS option in Node.js) to also contain the relevant intermediate certificate.</p>
+<p>Addressing this problem by modifying a root bundle is <strong>incredibly</strong> brittle.
+When the server leaf certificate inevitably expires, our outbound connections
+to the misconfigured partner will likely fail unless the newly rotated leaf
+certificate is also signed by the exact same intermediate. For this reason,
+it’s critical to rely on technical support, business development and other
+channels to try to help partners “do the right thing”™ and fix their
+server TLS configuration.</p>
+</div>
+<div class="section" id="mutual-tls">
+<h2>Mutual TLS<a class="headerlink" href="#mutual-tls" title="Permalink to this headline">¶</a></h2>
+<p>Mutual TLS (mTLS<a class="footnote-reference brackets" href="#massl" id="id2">1</a>) is a form of TLS where <strong>both</strong> the server and the
+client present certificates and prove they own the corresponding private key.
+Usage of mTLS is somewhat uncommon in the “general” web and API landscape,
+though it is fairly common both in banking and in infrastructure projects
+(e.g. Kubernetes).</p>
+<p>When using mTLS, it’s not uncommon for a partner to use a private or internal
+CA to sign client certificates. In typical cases, this can be addressed (as a
+client) by just presenting the entire chain with a private root CA; i.e.
+we can handle this in our code with just our certificate and without the need
+to modify the root bundle used by our TLS / HTTPS client. In rare cases,
+partners may require <strong>only</strong> a leaf be presented for validation. In these
+rare cases, most programming language runtimes will require adding these
+internal CA certificates to the root bundle.</p>
+<p>As with the <a class="reference internal" href="#misconfiguration"><span class="std std-ref">Misconfiguration</span></a> section above, having to modify the
+root bundle should be a last resort both for security reasons and for potential
+for application / configuration brittleness. Rather than doing this,
+coordination with partners should be attempted to allow for more flexibility
+in validation. I.e. for a partner, a client certificate presented as the
+full chain should be considered just as a valid as presenting the leaf only
+if the handshake is valid.</p>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="massl"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>mTLS is sometimes referred to as MASSL. This is an “outdated”
+reference to now defunct protocols SSL 1.0, 2.0 and 3.0. Unfortunately there
+will probably always be some confusion in terminology between SSL and TLS,
+e.g. the very useful <code class="docutils literal notranslate"><span class="pre">openssl</span></code> project likely will never rename to <code class="docutils literal notranslate"><span class="pre">opentls</span></code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="nodejs.html" class="btn btn-neutral float-right" title="Node.js" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="trust.html" class="btn btn-neutral float-left" title="Trust" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

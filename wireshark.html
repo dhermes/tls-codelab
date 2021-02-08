@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Wireshark Tooling &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Trust" href="trust.html" />
+    <link rel="prev" title="openssl Tooling" href="openssl.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Wireshark Tooling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#start-listening">Start Listening</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fire-off-request">Fire Off Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filter-packets">Filter Packets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodejs.html">Node.js</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix/index.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Wireshark Tooling</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/wireshark.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="wireshark-tooling">
+<h1>Wireshark Tooling<a class="headerlink" href="#wireshark-tooling" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#start-listening" id="id1">Start Listening</a></p></li>
+<li><p><a class="reference internal" href="#fire-off-request" id="id2">Fire Off Request</a></p></li>
+<li><p><a class="reference internal" href="#filter-packets" id="id3">Filter Packets</a></p></li>
+</ul>
+</div>
+<p>Continuing on our exploration into <code class="docutils literal notranslate"><span class="pre">github.com</span></code>, we’re going to use
+Wireshark to capture requests sent over Wi-Fi:</p>
+<img alt="Wireshark Welcome View" class="align-center" src="_images/wireshark01.png" />
+<div class="section" id="start-listening">
+<h2><a class="toc-backref" href="#id1">Start Listening</a><a class="headerlink" href="#start-listening" title="Permalink to this headline">¶</a></h2>
+<p>Once we start capturing traffic for the <code class="docutils literal notranslate"><span class="pre">en0</span></code> (Wi-Fi) interface, it can be
+a bit chatty to start because there is lots of background noise going over
+TCP and UDP from applications already running</p>
+<img alt="Wireshark Chatty" class="align-center" src="_images/wireshark02.png" />
+<p>We want to filter this down just to the specific IP (and port, if needed) for
+the request we’re trying to capture.</p>
+</div>
+<div class="section" id="fire-off-request">
+<h2><a class="toc-backref" href="#id2">Fire Off Request</a><a class="headerlink" href="#fire-off-request" title="Permalink to this headline">¶</a></h2>
+<p>After starting our packet capture, make a <code class="docutils literal notranslate"><span class="pre">curl</span></code> request in verbose mode so
+we can see which IP was used to reach the server. In our case, we <strong>only</strong>
+care about the request <strong>metadata</strong> so we send the response body to <code class="docutils literal notranslate"><span class="pre">/dev/null</span></code>
+and silence the download progress bar (via <code class="docutils literal notranslate"><span class="pre">--silent</span></code>):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ curl --verbose --silent --output /dev/null https://github.com/dhermes/tls-codelab
+*   Trying 140.82.114.3...
+* TCP_NODELAY set
+* Connected to github.com (140.82.114.3) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/cert.pem
+  CApath: none
+* TLSv1.2 (OUT), TLS handshake, Client hello (1):
+} [224 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server hello (2):
+{ [102 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [2971 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [300 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [37 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS change cipher, Change cipher spec (1):
+{ [1 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: C=US; ST=California; L=San Francisco; O=GitHub, Inc.; CN=github.com
+*  start date: May  5 00:00:00 2020 GMT
+*  expire date: May 10 12:00:00 2022 GMT
+*  subjectAltName: host &quot;github.com&quot; matched cert&#39;s &quot;github.com&quot;
+*  issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=DigiCert SHA2 High Assurance Server CA
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+* Using Stream ID: 1 (easy handle 0x7fcdfe00fe00)
+&gt; GET /dhermes/tls-codelab HTTP/2
+&gt; Host: github.com
+&gt; User-Agent: curl/7.64.1
+&gt; Accept: */*
+&gt;
+* Connection state changed (MAX_CONCURRENT_STREAMS == 100)!
+&lt; HTTP/2 200
+&lt; server: GitHub.com
+&lt; date: Fri, 05 Feb 2021 16:20:07 GMT
+&lt; content-type: text/html; charset=utf-8
+&lt; vary: X-PJAX, Accept-Encoding, Accept, X-Requested-With
+&lt; etag: W/&quot;06d39fc8a2df550f10c332bdd7c74fe7&quot;
+&lt; cache-control: max-age=0, private, must-revalidate
+&lt; strict-transport-security: max-age=31536000; includeSubdomains; preload
+&lt; x-frame-options: deny
+&lt; x-content-type-options: nosniff
+&lt; x-xss-protection: 1; mode=block
+&lt; referrer-policy: no-referrer-when-downgrade
+&lt; expect-ct: max-age=2592000, report-uri=&quot;https://api.github.com/_private/browser/errors&quot;
+&lt; content-security-policy: default-src &#39;none&#39;; base-uri &#39;self&#39;; block-all-mixed-content; connect-src &#39;self&#39; uploads.github.com www.githubstatus.com collector.githubapp.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com cdn.optimizely.com logx.optimizely.com/v1/events wss://alive.github.com online.visualstudio.com/api/v1/locations; font-src github.githubassets.com; form-action &#39;self&#39; github.com gist.github.com; frame-ancestors &#39;none&#39;; frame-src render.githubusercontent.com; img-src &#39;self&#39; data: github.githubassets.com identicons.github.com collector.githubapp.com github-cloud.s3.amazonaws.com *.githubusercontent.com; manifest-src &#39;self&#39;; media-src &#39;none&#39;; script-src github.githubassets.com; style-src &#39;unsafe-inline&#39; github.githubassets.com; worker-src github.com/socket-worker-5029ae85.js gist.github.com/socket-worker-5029ae85.js
+&lt; set-cookie: _gh_sess=bRegQQVDKcdFlXHgBVJXQk8AUbnh%2BiCjlc1Bre%2FF4aFg2WUHk5LumSd02NDEXVJTCyiB7Qzu%2Bt7xqYZtKICABciFfQ9%2FpaA3hrVnd%2FJgLvM%2BFySzB79VT9qpV4XCrTqgmxfvGDAiAOootko%2FPjp3hlom7MEwGPNJdTDIQ13osPhs%2BDXMvphONm0fs6yynRtCXPd%2F8AcJBO%2BkA1V5Z1BkVq%2B8tjRyRED2qAugBYnFlWKd2BmP9NBAiv8U%2BXmOsWf%2FWb3t38u0rcHq8nB0xv50bg%3D%3D--eTzjDrx16Ena1y%2BY--LirGYnMUNISvY3yrD9fTAQ%3D%3D; Path=/; HttpOnly; Secure; SameSite=Lax
+&lt; set-cookie: _octo=GH1.1.829372991.1612542022; Path=/; Domain=github.com; Expires=Sat, 05 Feb 2022 16:20:22 GMT; Secure; SameSite=Lax
+&lt; set-cookie: logged_in=no; Path=/; Domain=github.com; Expires=Sat, 05 Feb 2022 16:20:22 GMT; HttpOnly; Secure; SameSite=Lax
+&lt; accept-ranges: bytes
+&lt; x-github-request-id: E3BD:7E8C:6AC176:A425C5:601D7046
+&lt;
+{ [1361 bytes data]
+* Connection #0 to host github.com left intact
+* Closing connection 0
+</pre></div>
+</div>
+</div>
+<div class="section" id="filter-packets">
+<h2><a class="toc-backref" href="#id3">Filter Packets</a><a class="headerlink" href="#filter-packets" title="Permalink to this headline">¶</a></h2>
+<p>We see even from the <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">--verbose</span></code> output a series of TLSv1.2
+“Record Layers”, e.g. <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">hello</span> <span class="pre">(1)</span></code>, <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">hello</span> <span class="pre">(2)</span></code>. Both
+<a class="reference external" href="https://tls.ulfheim.net/">The Illustrated TLS (1.2) Connection</a> and
+<a class="reference external" href="https://tls13.ulfheim.net/">The Illustrated TLS 1.3 Connection</a> are great resources to understand
+each record layer.</p>
+<p>Since we’ve
+narrowed down the IP address as <code class="docutils literal notranslate"><span class="pre">140.82.114.3</span></code>, we can now filter our
+captured packets</p>
+<img alt="Wireshark Capture" class="align-center" src="_images/wireshark03.png" />
+<p>We can see a series of back-and-forth packets sent to / from the server.
+Some packets (e.g. number 80 and 82) only contain a single record layer.
+Other packets (e.g. number 84, 86 and 87) contain multiple record layers. For
+example the <code class="docutils literal notranslate"><span class="pre">Certificate</span> <span class="pre">(11)</span></code> record layer in packet <code class="docutils literal notranslate"><span class="pre">84</span></code> shows the
+leaf and intermediate presented by the server as we previously saw:</p>
+<img alt="Wireshark Certificate Record Layer" class="align-center" src="_images/wireshark04.png" />
+<p>One downside here is that, since the whole point of TLS is encryption, the
+packets corresponding to the actual application protocol (here HTTP) are
+encrypted. This means our packet capture enables only a certain type of
+protocol level debugging.</p>
+<p>However, we have a solution for this, by setting the <code class="docutils literal notranslate"><span class="pre">SSLKEYLOGFILE</span></code>
+environment variable, <code class="docutils literal notranslate"><span class="pre">curl</span></code> will write out the session master key for the
+client:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ SSLKEYLOGFILE=./keylogfile.txt curl \
+&gt;   --verbose --silent --output /dev/null \
+&gt;   https://github.com/dhermes/tls-codelab
+*   Trying 140.82.112.4...
+* TCP_NODELAY set
+* Connected to github.com (140.82.112.4) port 443 (#0)
+...
+$
+$ cat ./keylogfile.txt
+CLIENT_RANDOM A14CE966C29023A2EB922CD00EFD297606E6F4430FD6168278D46DF555AC3757 40D39E1231201F8AB96706094DF31EFCB585A213B696BD80B507A43A809EDEAF62E27633E17182259806A01CCBD0B7DA
+</pre></div>
+</div>
+<p>We can set this path for the TLS protocol in the Wireshark settings</p>
+<img alt="Wireshark Set SSLKEYLOGFILE" class="align-center" src="_images/wireshark05.png" />
+<p>and after doing so, the packets are decrypted</p>
+<img alt="Wireshark Chatty" class="align-center" src="_images/wireshark06.png" />
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="trust.html" class="btn btn-neutral float-right" title="Trust" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="openssl.html" class="btn btn-neutral float-left" title="openssl Tooling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

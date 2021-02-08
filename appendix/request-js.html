@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>request.js &mdash; tls-codelab  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="server.js" href="server-js.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> tls-codelab
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                42d08fe5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openssl.html"><code class="docutils literal notranslate"><span class="pre">openssl</span></code> Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wireshark.html">Wireshark Tooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../trust.html">Trust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../problems.html">Common Reasons to Debug TLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nodejs.html">Node.js</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Appendix</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="root.html">Generating Root CA Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intermediate.html">Generating Intermediate CA Certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html">Generating Leaf Certificate for Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Generating Leaf Certificate for TLS Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple.html">Keeping Around Two (or More) Root CAs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-js.html"><code class="docutils literal notranslate"><span class="pre">server.js</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">request.js</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tls-codelab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Appendix</a> &raquo;</li>
+        
+      <li><code class="docutils literal notranslate"><span class="pre">request.js</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/dhermes/tls-codelab/blob/42d08fe5a72386ec7cc6fd18b3f338ba3fdb2be1/docs/appendix/request-js.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="request-js">
+<h1><code class="docutils literal notranslate"><span class="pre">request.js</span></code><a class="headerlink" href="#request-js" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;axios&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">commandLineArgs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;command-line-args&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">OPTION_DEFINITIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;root-ca&#39;</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;url&#39;</span> <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="kd">function</span> <span class="nx">getOptions</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">cliOptions</span> <span class="o">=</span> <span class="nx">commandLineArgs</span><span class="p">(</span><span class="nx">OPTION_DEFINITIONS</span><span class="p">)</span>
+    <span class="kd">const</span> <span class="nx">rootCA</span> <span class="o">=</span> <span class="nx">cliOptions</span><span class="p">[</span><span class="s1">&#39;root-ca&#39;</span><span class="p">]</span>
+    <span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">cliOptions</span><span class="p">.</span><span class="nx">url</span> <span class="o">||</span> <span class="s1">&#39;https://localhost:8443&#39;</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="nx">rootCA</span><span class="p">,</span> <span class="nx">url</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">cliOptions</span> <span class="o">=</span> <span class="nx">getOptions</span><span class="p">()</span>
+    <span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span><span class="p">.</span><span class="nx">ca</span> <span class="o">=</span> <span class="p">[</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">rootCA</span><span class="p">)]</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">axiosOptions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">httpsAgent</span><span class="o">:</span> <span class="k">new</span> <span class="nx">https</span><span class="p">.</span><span class="nx">Agent</span><span class="p">(</span><span class="nx">options</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">cliOptions</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="nx">axiosOptions</span><span class="p">)</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">isAxiosError</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="nx">err</span>
+        <span class="p">}</span>
+
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">code</span><span class="p">)</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span> <span class="o">===</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">main</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="server-js.html" class="btn btn-neutral float-left" title="server.js" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Danny Hermes 42d08fe5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
