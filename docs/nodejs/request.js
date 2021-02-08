@@ -27,14 +27,14 @@ async function main() {
 
     try {
         const response = await axios.get(cliOptions.url, axiosOptions)
-        console.log(response.data)
+        console.log(`Response: ${JSON.stringify(response.data)}`)
     } catch (err) {
         if (!(err.isAxiosError)) {
             throw err
         }
 
-        console.log(err.code)
-        console.log(err.message)
+        console.log(`   Error Code: ${err.code}`)
+        console.log(`Error Message: ${err.message}`)
     }
 }
 

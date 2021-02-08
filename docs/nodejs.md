@@ -249,4 +249,78 @@ well-known CAs curated by Mozilla. Mozilla's CAs are completely replaced when
 CAs are explicitly specified using this option.
 ```
 
+### Making Requests
+
+In order to make an HTTP-over-TLS (typically HTTPS) request via Node.js,
+the `axios` [library][2] is used. To configure a custom CA, it's necessary to
+override the `httpsAgent`:
+
+```{literalinclude} nodejs/request.js
+---
+language: javascript
+lines: 20-26
+dedent: 4
+---
+```
+
+in the request options:
+
+```{literalinclude} nodejs/request.js
+---
+language: javascript
+lines: 29
+dedent: 8
+---
+```
+
+### No Extra CA Provided
+
+Invoking `axios` in the `request.js` script **without** mentioning the
+custom CA results in a familiar error message:
+
+```text
+$ cd docs/nodejs/
+$ node request.js
+   Error Code: UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+Error Message: unable to get local issuer certificate
+```
+
+### Root CA Provided
+
+To successfully connect to the locally running server, it's enough to
+specify a path to the custom root CA:
+
+```text
+$ cd docs/nodejs/
+$ node request.js \
+>   --root-ca ../tls-certs/root-ca-cert.pem
+Response: {"success":true}
+```
+
+````{admonition} CA Override
+:class: error
+
+Herein lies the problem, we have replaced our **entire** root bundle with a
+bundle containing only a single root CA (`root-ca-cert.pem`). Now a request
+to `google.com` that would have worked without an override
+
+```text
+$ cd docs/nodejs/
+$ node request.js --url https://google.com
+Response: "<!doctype html>...
+```
+
+will **fail** in the same way our previous request failed
+
+```text
+$ cd docs/nodejs/
+$ node request.js \
+>   --root-ca ../tls-certs/root-ca-cert.pem \
+>   --url https://google.com
+   Error Code: UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+Error Message: unable to get local issuer certificate
+```
+````
+
 [1]: https://nodejs.org/docs/latest-v14.x/api/tls.html#tls_tls_createsecurecontext_options
+[2]: https://github.com/axios/axios
