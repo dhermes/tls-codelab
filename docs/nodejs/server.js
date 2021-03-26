@@ -9,6 +9,10 @@ const OPTION_DEFINITIONS = [
     { name: 'key' },
 ]
 
+function secureConnectionCallback(tlsSocket) {
+    tlsSocket.disableRenegotiation()
+}
+
 function getOptions() {
     const cliOptions = commandLineArgs(OPTION_DEFINITIONS)
     const cert = cliOptions.cert
@@ -41,6 +45,7 @@ function main() {
     })
 
     const server = https.createServer(options, app)
+    server.on('secureConnection', secureConnectionCallback)
     server.listen(PORT, () => {
         console.log(`Example TLS app listening at https://localhost:${PORT}`)
     })
