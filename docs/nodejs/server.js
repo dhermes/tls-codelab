@@ -2,6 +2,7 @@ const commandLineArgs = require('command-line-args')
 const express = require('express')
 const fs = require('fs')
 const https = require('https')
+const tls = require('tls')
 
 const PORT = 8443
 const OPTION_DEFINITIONS = [
@@ -9,8 +10,12 @@ const OPTION_DEFINITIONS = [
     { name: 'key' },
 ]
 
-function secureConnectionCallback(tlsSocket) {
-    tlsSocket.disableRenegotiation()
+function monkeyPatchTLSSocket() {
+    const originalInit = tls.TLSSocket.prototype._init
+    tls.TLSSocket.prototype._init = function _init(socket, wrap) {
+        this.disableRenegotiation()
+        return originalInit.apply(this, [socket, wrap])
+    }
 }
 
 function getOptions() {
@@ -30,6 +35,7 @@ function getOptions() {
 }
 
 function main() {
+    monkeyPatchTLSSocket()
     const cliOptions = getOptions()
 
     const app = express()
@@ -45,7 +51,6 @@ function main() {
     })
 
     const server = https.createServer(options, app)
-    server.on('secureConnection', secureConnectionCallback)
     server.listen(PORT, () => {
         console.log(`Example TLS app listening at https://localhost:${PORT}`)
     })
